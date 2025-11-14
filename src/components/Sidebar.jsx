@@ -9,13 +9,13 @@ import {
     SidebarGroupContent,
 } from "@/components/ui/sidebar"
 import { Menu, Home, History, ListVideo, ThumbsUp, Clock4, ChevronRight, TvMinimalPlay } from "lucide-react"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "../components/ui/sidebar"
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "./ui/sidebar"
 
 export default function AppSidebar() {
     const [collapsed, setCollapsed] = React.useState(false)
 
     return (
-        <SidebarProvider>
+        <SidebarProvider className={"w-fit"}>
             {/* Sidebar */}
             <Sidebar
                 className={`h-screen border-r bg-background text-foreground transition-all duration-300 ease-in-out flex flex-col justify-between
@@ -47,7 +47,7 @@ export default function AppSidebar() {
                                 ].map((item, index) => (
                                     <li
                                         key={index}
-                                        className={`flex items-center gap-3 p-2 rounded-md hover:bg-muted cursor-pointer
+                                        className={`flex items-center gap-3 p-2 rounded-md hover:bg-muted focus:bg-muted cursor-pointer
                                             ${collapsed ? "justify-center" : ""}`}
                                     >
                                         {item.icon}
@@ -70,6 +70,7 @@ export default function AppSidebar() {
                                 >
                                     {!collapsed && <span className="flex items-center text-lg font-semibold gap-3 ">You <ChevronRight className="w-4 h-4" /></span>}
                                 </li>
+                                
                                 {[
                                     { icon: <History className="w-6 h-6" />, label: "History" },
                                     { icon: <ListVideo className="w-6 h-6" />, label: "Playlists" },
