@@ -1,10 +1,10 @@
 import React from 'react'
-import AppSidebar from './pages/Sidebar'
+import Navigation from './routes/Navigation'
 
 function App() {
   return (
-    <div className="w-full h-screen dark bg-background">
-      <AppSidebar />
+    <div className="w-full h-screen">
+      <Navigation />
     </div>
   )
 }
