@@ -1,10 +1,10 @@
 import React from 'react'
-import Layout from './pages/Layout.jsx'
+import Navigation from './routes/Navigation'
 
 function App() {
   return (
     <div className="w-full h-screen">
-      <Layout />
+      <Navigation />
     </div>
   )
 }

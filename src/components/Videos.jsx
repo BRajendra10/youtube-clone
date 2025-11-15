@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Home() {
+export default function Videos() {
     return(
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6 p-4">
             <VideoSkeleton />
@@ -22,7 +22,7 @@ export function VideoSkeleton() {
     return (
         <div className="animate-pulse space-y-3">
             {/* Thumbnail */}
-            <div className="w-full h-48 bg-muted rounded-lg"></div>
+            <div className="w-full h-68 bg-muted rounded-lg"></div>
 
             {/* Video Info */}
             <div className="flex gap-3">
