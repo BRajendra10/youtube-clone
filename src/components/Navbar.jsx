@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Search, Plus, Bell, Settings, TvMinimalPlay, SquarePen, Menu } from 'lucide-react';
 import {
     DropdownMenu,
@@ -12,15 +12,11 @@ import {
     PopoverTrigger,
     PopoverContent,
 } from "@/components/ui/popover";
+import { useSelector } from "react-redux";
+
 
 export default function Navbar() {
-    const [search, setSearch] = useState(null);
-
-    const handleClick = () => {
-        if (search) {
-            console.log(search)
-        }
-    }
+    const { currentUser } = useSelector((state) => state.user);
 
     return (
         <nav className="sticky top-0 w-full h-16 bg-background  flex items-center justify-between px-4 z-5">
@@ -33,12 +29,10 @@ export default function Navbar() {
                         type="text"
                         placeholder="Search"
                         className="w-full h-10 border rounded-l-full px-4 outline-none"
-                        onChange={(e) => setSearch(e.target.value)}
                     />
 
                     <button
                         className="h-10 w-12 border border-l-0 rounded-r-full flex items-center justify-center"
-                        onClick={handleClick}
                     >
                         <Search size={20} />
                     </button>
@@ -143,8 +137,7 @@ export default function Navbar() {
                         <button className="w-9 h-9 rounded-full overflow-hidden">
                             <img
                                 className="w-9 h-9 rounded-full"
-                                src="https://avatars.githubusercontent.com/u/182490144?s=400&u=6fe48aa6c2af9377489a8a06332d9bd62a44156c&v=4"
-                                alt="User Avatar"
+                                src={currentUser?.avatar}
                             />
                         </button>
                     </PopoverTrigger>
@@ -157,13 +150,13 @@ export default function Navbar() {
                         <div className="p-4 flex items-center gap-3">
                             <img
                                 className="w-12 h-12 rounded-full"
-                                src="https://avatars.githubusercontent.com/u/182490144?s=400&u=6fe48aa6c2af9377489a8a06332d9bd62a44156c&v=4"
+                                src={currentUser?.avatar}
                                 alt=""
                             />
 
                             <div>
-                                <h3 className="font-semibold text-base">Rajendra Behera</h3>
-                                <p className="text-sm text-muted-foreground">rajendrabehera8116@gmail.com</p>
+                                <h3 className="font-semibold text-base">{currentUser?.fullName}</h3>
+                                <p className="text-sm text-muted-foreground">{currentUser?.email}</p>
 
                                 <button className="text-primary text-sm font-medium mt-1 hover:underline">
                                     Manage your account

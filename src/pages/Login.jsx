@@ -4,21 +4,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { NavLink } from "react-router-dom";
-import axios from "axios";
+
+import { NavLink, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+
+import { LoginUser } from '../features/userSlice.js';
 
 export default function Login() {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const loginHandler = async (email, password) => {
-        console.log(email, password);
-
-        const fetchedData = await axios.post("/api/v1/users/login", {
-            email,
-            password,
-        });
-        console.log(fetchedData.data);
+        dispatch(LoginUser({email, password}))
+        navigate('/');
     }
 
     return (
