@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Layout from '../pages/Layout';
 import Login from "../pages/Login";
-import Logout from "../pages/Logout";
+import Logout from "../pages/Signup";
 
 import Videos from "../components/Videos";
 
@@ -13,7 +13,7 @@ export default function Navigation() {
         <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/logout" element={<Logout />} />
+            <Route path="/signup" element={<Logout />} />
 
             {/* Protected Layout */}
             <Route path="/" element={<Layout />}>
