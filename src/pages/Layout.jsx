@@ -17,7 +17,7 @@ export default function Layout() {
             <div className="flex-1 flex flex-col">
                 <Navbar />
 
-                <main className="p-4">
+                <main>
                     <Outlet />
                 </main>
             </div>

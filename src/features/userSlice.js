@@ -15,10 +15,17 @@ export const LoginUser = createAsyncThunk("user/login", async ({ email, password
     return response.data.data;
 })
 
+export const getUserChannel = createAsyncThunk("user/channel", async (username) => {
+    const response = await axios.get(`/api/v1/users/c/${username}`);
+
+    return response.data.data;
+})
+
 const initialState = {
     currentUser: null,
+    userChannel: null,
     accessToken: null,
-    reqStatus: null
+    reqStatus: null,
 }
 
 const userSlice = createSlice({
@@ -49,6 +56,18 @@ const userSlice = createSlice({
                 state.reqStatus = true;
             })
             .addCase(RegisterUser.rejected, (state) => {
+                state.reqStatus = "error"
+            })
+        
+        builder
+            .addCase(getUserChannel.pending, (state) => {
+                state.reqStatus = "pending"
+            })
+            .addCase(getUserChannel.fulfilled, (state, action) => {
+                state.reqStatus = true
+                state.userChannel = action.payload;
+            })
+            .addCase(getUserChannel.rejected, (state) => {
                 state.reqStatus = "error"
             })
     }

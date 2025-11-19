@@ -13,6 +13,7 @@ import {
     PopoverContent,
 } from "@/components/ui/popover";
 import { useSelector } from "react-redux";
+import { NavLink } from "react-router-dom";
 
 
 export default function Navbar() {
@@ -168,9 +169,9 @@ export default function Navbar() {
 
                         {/* Menu Items */}
                         <div className="py-1">
-                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
+                            <NavLink className="block w-full text-left px-4 py-2 text-sm hover:bg-muted" to="/channel" >
                                 Your channel
-                            </button>
+                            </NavLink>
 
                             <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
                                 YouTube Studio
