@@ -1,26 +1,22 @@
 import React from "react";
-import Sidebar from '../components/Sidebar.jsx'
+import AppSidebar from "../components/Sidebar.jsx";
 import Navbar from "../components/Navbar.jsx";
-import Navigation from "../routes/Navigation.jsx"
 import { Outlet } from "react-router-dom";
-// import { useSelector } from "react-redux";
-
+import { SidebarProvider, SidebarInset } from "../components/ui/sidebar.jsx";
 
 export default function Layout() {
-    // const navigate = useNavigate();
-
 
     return (
-        <div className="flex dark bg-background text-foreground">
-            <Sidebar />
+        <SidebarProvider className="flex bg-background text-foreground">
+            <AppSidebar />
 
-            <div className="flex-1 flex flex-col">
+            <SidebarInset className="flex-1 flex flex-col">
                 <Navbar />
 
                 <main>
                     <Outlet />
                 </main>
-            </div>
-        </div>
-    )
+            </SidebarInset>
+        </SidebarProvider>
+    );
 }

@@ -12,19 +12,28 @@ import {
     PopoverTrigger,
     PopoverContent,
 } from "@/components/ui/popover";
+
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-
+import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 
 export default function Navbar() {
     const { currentUser } = useSelector((state) => state.user);
+    const { toggleSidebar } = useSidebar();
 
     return (
         <nav className="sticky top-0 w-full h-16 bg-background  flex items-center justify-between px-4 z-5">
-            <span></span>
+            <span className="hidden md:flex"></span>
+            <button
+                onClick={toggleSidebar}
+                className="block md:hidden p-2 rounded-md hover:bg-muted transition"
+            >
+                <Menu className="h-5 w-5" />
+            </button>
+
 
             {/* Middle Section (Search Bar) */}
-            <div className="flex-1 max-w-xl mx-4">
+            <div className="hidden md:flex flex-1 max-w-xl mx-4">
                 <div className="flex items-center w-full relative">
                     <input
                         type="text"
@@ -41,7 +50,7 @@ export default function Navbar() {
             </div>
 
             {/* Right Section (create video or post / notification / Profile) */}
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-4">
                 {/* Example: upload / notifications / profile */}
                 <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center justify-between gap-3 p-2 px-3 rounded-full bg-popover hover:bg-muted cursor-pointer">
@@ -53,6 +62,31 @@ export default function Navbar() {
                         <DropdownMenuItem className="flex items-center gap-3"> <SquarePen /> Create a post</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                <Popover >
+                    <PopoverTrigger asChild>
+                        <button className="p-2 rounded-full hover:bg-muted transition">
+                            <Search className="w-5 h-5" />
+                        </button>
+                    </PopoverTrigger>
+
+                    <PopoverContent className="relative right-18 w-100 dark p-2 rounded-lg shadow-lg bg-background border">
+
+                        <div className="flex items-center w-full relative">
+                            <input
+                                type="text"
+                                placeholder="Search"
+                                className="w-full h-10 border rounded-l-full px-4 outline-none"
+                            />
+
+                            <button
+                                className="h-10 w-12 border border-l-0 rounded-r-full flex items-center justify-center"
+                            >
+                                <Search size={20} />
+                            </button>
+                        </div>
+                    </PopoverContent>
+                </Popover>
 
                 <Popover>
                     <PopoverTrigger asChild>

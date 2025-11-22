@@ -1,118 +1,122 @@
-import * as React from "react"
+import * as React from "react";
 import {
-    Sidebar,
-    SidebarProvider,
-    SidebarHeader,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupLabel,
-    SidebarGroupContent,
-} from "@/components/ui/sidebar"
-import { Menu, Home, History, ListVideo, ThumbsUp, Clock4, ChevronRight, TvMinimalPlay } from "lucide-react"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarSeparator } from "./ui/sidebar"
-import { NavLink } from "react-router-dom"
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarRail,
+} from "@/components/ui/sidebar";
+
+import {
+  Home,
+  TvMinimalPlay,
+  History,
+  ListVideo,
+  ThumbsUp,
+  Clock4,
+  Menu,
+} from "lucide-react";
+
+import { NavLink } from "react-router-dom";
+import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 
 export default function AppSidebar() {
-    const [collapsed, setCollapsed] = React.useState(false)
+  const { state, setOpen, toggleSidebar } = useSidebar();
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 1024) {
+        setOpen(true)
+      }else{
+        setOpen(false);
+      }
+
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    }
+  }, [setOpen])
 
 
-    React.useEffect(() => {
-        const handleWindoSize = () => {
-            if (window.innerWidth < 1280) {
-                setCollapsed(true)
-            } else {
-                setCollapsed(false)
-            }
-        }
+  return (
+    <Sidebar collapsible="icon" className="bg-background text-foreground">
+      {/* Logo / Title */}
+      <SidebarHeader className="flex flex-row items-center py-4 font-semibold text-lg">
+        <button
+          onClick={toggleSidebar}
+          className="hidden md:block p-2 rounded-md hover:bg-muted transition"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        {state === "expanded" && "My App"}
+      </SidebarHeader>
 
-        handleWindoSize()
-        window.addEventListener("resize", handleWindoSize)
-
-        return window.addEventListener("resize", handleWindoSize)
-    }, [])
-
-    return (
-        <SidebarProvider className={`hidden md:block  ${collapsed ? "w-20" : "w-64"}`}>
-            {/* Sidebar */}
-            <Sidebar
-                className={`h-screen border-r transition-all duration-300 ease-in-out flex flex-col justify-between
-                    ${collapsed ? "w-20" : "w-64"}`}
-            >
-                {/* Sidebar Header */}
-                <SidebarHeader className={`flex flex-row items-center ${collapsed ? "justify-center" : "justify-start"} p-3`}>
-                    <button
-                        onClick={() => setCollapsed(!collapsed)}
-                        className="p-2 rounded-md hover:bg-muted transition-colors"
-                    >
-                        <Menu className="w-6 h-6" />
-                    </button>
-                    {!collapsed && (
-                        <h2 className="font-semibold text-lg whitespace-nowrap">
-                            My App
-                        </h2>
+      {/* Main Navigation */}
+      <SidebarContent >
+        <SidebarGroup>
+          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {[
+                {
+                  icon: <Home className="w-5 h-5" />,
+                  label: "Home",
+                  path: "/"
+                },
+                {
+                  icon: <TvMinimalPlay className="w-5 h-5" />,
+                  label: "Subscriptions",
+                  path: "/Subscriptions"
+                },
+                {
+                  icon: <History className="w-5 h-5" />,
+                  label: "History",
+                  path: "/History"
+                },
+                {
+                  icon: <ListVideo className="w-5 h-5" />,
+                  label: "Playlists",
+                  path: "/Playlists"
+                },
+                {
+                  icon: <ThumbsUp className="w-5 h-5" />,
+                  label: "Liked Videos",
+                  path: "/Liked Videos"
+                },
+                {
+                  icon: <Clock4 className="w-5 h-5" />,
+                  label: "Watch Later",
+                  path: "/Watch Later"
+                },
+              ].map((item, index) => (
+                <SidebarMenuItem key={index}>
+                  <NavLink to={item.path} end>
+                    {({ isActive }) => (
+                      <SidebarMenuButton className="flex gap-3" isActive={isActive} size="large">
+                        <span>
+                          {item.icon}
+                        </span>
+                        <span className="text-sm">{item.label}</span>
+                      </SidebarMenuButton>
                     )}
-                </SidebarHeader>
+                  </NavLink>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-                {/* Sidebar Content */}
-                <SidebarContent className="flex-1">
-                    <SidebarGroup>
-                        <SidebarGroupContent className="space-y-2 px-1">
-                            {[
-                                { icon: <Home className="w-6 h-6" />, label: "Home", to: "/" },
-                                { icon: <TvMinimalPlay className="w-6 h-6" />, label: "Subscriptions", to: "/subscriptions" },
-                            ].map((item, index) => (
-                                <NavLink
-                                    key={index}
-                                    className={({ isActive }) =>
-                                        [
-                                            "flex items-center gap-3 p-2 rounded-md cursor-pointer transition",
-                                            collapsed ? "justify-center" : "",
-                                            isActive ? "bg-muted font-semibold" : "hover:bg-muted"
-                                        ].join(" ")
-                                    }
-                                    to={item.to}
-                                >
-                                    {item.icon}
-                                    {!collapsed && <span>{item.label}</span>}
-                                </NavLink>
-                            ))}
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-
-                    {!collapsed && <div className="h-px w-full bg-sidebar-border"></div>}
-
-                    <SidebarGroup>
-                        <SidebarGroupContent>
-                            <ul className="space-y-2 px-1">
-                                <li
-                                    className={`hidden xl:flex items-center gap-3 p-2 rounded-md hover:bg-muted cursor-pointer
-                                        ${collapsed ? "justify-center" : ""}`}
-                                >
-                                    {!collapsed && <span className="flex items-center text-lg font-semibold gap-3 ">You <ChevronRight className="w-4 h-4" /></span>}
-                                </li>
-
-                                {[
-                                    { icon: <History className="w-6 h-6" />, label: "History" },
-                                    { icon: <ListVideo className="w-6 h-6" />, label: "Playlists" },
-                                    { icon: <Clock4 className="w-6 h-6" />, label: "Watch Later" },
-                                    { icon: <ThumbsUp className="w-6 h-6" />, label: "Liked videos" },
-                                ].map((item, index) => (
-                                    <li
-                                        key={index}
-                                        className={`flex items-center gap-3 p-2 rounded-md hover:bg-muted cursor-pointer
-                                            ${collapsed ? "justify-center" : ""}`}
-                                    >
-                                        {item.icon}
-                                        {!collapsed && <span>{item.label}</span>}
-                                    </li>
-                                ))}
-                            </ul>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-
-                </SidebarContent>
-
-            </Sidebar>
-        </SidebarProvider>
-    )
+      {/* Rail (auto-collapsed mode indicator) */}
+      <SidebarRail />
+    </Sidebar>
+  );
 }
