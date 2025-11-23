@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import { useDispatch } from "react-redux";
 import { RegisterUser } from "../features/userSlice";
@@ -14,7 +14,7 @@ import * as Yup from "yup";
 
 export default function Signup() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // -------------------- Yup Validation Schema --------------------
   const validationSchema = Yup.object({
@@ -49,16 +49,16 @@ export default function Signup() {
 
     onSubmit: (values) => {
       // Prepare FormData for backend
-      const formData = new FormData();
-      formData.append("fullName", values.fullName);
-      formData.append("username", values.username);
-      formData.append("email", values.email);
-      formData.append("password", values.password);
-      formData.append("avatar", values.avatar);
-      formData.append("coverImage", values.coverImage);
+      // const formData = new FormData();
+      // formData.append("fullName", values.fullName);
+      // formData.append("username", values.username);
+      // formData.append("email", values.email);
+      // formData.append("password", values.password);
+      // formData.append("avatar", values.avatar);
+      // formData.append("coverImage", values.coverImage);
 
-      dispatch(RegisterUser(formData));
-      navigate("/")
+      dispatch(RegisterUser(values));
+      // navigate("/")
     },
   });
 

@@ -9,11 +9,15 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 export default function UserChannel() {
   const dispatch = useDispatch();
   const { username } = useSelector((state) => state.user.currentUser);
+  const accessToken = useSelector((state) => state.user.accessToken)
   const channel = useSelector((state) => state.user.userChannel);
 
   useEffect(() => {
-    if (username) dispatch(getUserChannel(username));
-  }, [dispatch, username]);
+    if (username || accessToken) {
+      dispatch(getUserChannel({ username, accessToken }));
+    }
+  }, [username, accessToken, dispatch]);
+
 
   if (!channel)
     return <div className="p-6 text-sm text-muted-foreground">Loading...</div>;

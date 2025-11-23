@@ -1,13 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const url = 'http://localhost:8000/api/v1/users'
+
 export const RegisterUser = createAsyncThunk("user/register", async (formData) => {
-    const response = await axios.post("/api/v1/users/register", formData);
-    return response.data;
+    const response = await axios.post(`${url}/register`, formData);
+    return response.data.data;
 })
 
 export const LoginUser = createAsyncThunk("user/login", async ({ email, password }) => {
-    const response = await axios.post("/api/v1/users/login", {
+    const response = await axios.post(`${url}/login`, {
         email,
         password
     });
@@ -15,8 +17,12 @@ export const LoginUser = createAsyncThunk("user/login", async ({ email, password
     return response.data.data;
 })
 
-export const getUserChannel = createAsyncThunk("user/channel", async (username) => {
-    const response = await axios.get(`/api/v1/users/c/${username}`);
+export const getUserChannel = createAsyncThunk("user/channel", async ({ username, accessToken }) => {
+    const response = await axios.get(`${url}/c/${username}`, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
+    });
 
     return response.data.data;
 })
@@ -58,7 +64,7 @@ const userSlice = createSlice({
             .addCase(RegisterUser.rejected, (state) => {
                 state.reqStatus = "error"
             })
-        
+
         builder
             .addCase(getUserChannel.pending, (state) => {
                 state.reqStatus = "pending"
