@@ -8,6 +8,7 @@ import Logout from "../pages/Signup";
 import Videos from "../components/Videos";
 import PrivateRoute from "./PrivateRoute";
 import UserChannel from "../pages/UserChannel";
+import { Subscriptions } from "../pages/Subscriptions";
 
 
 export default function Navigation() {
@@ -15,12 +16,12 @@ export default function Navigation() {
         <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Logout />} />
+            <Route path="/register" element={<Logout />} />
 
             {/* Protected Layout */}
             <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
                 <Route index element={<Videos />} />
-                <Route path="/subscriptions" element={<Videos />} />
+                <Route path="/subscriptions" element={<Subscriptions />} />
                 <Route path="/channel" element={<UserChannel />} />
             </Route>
         </Routes>

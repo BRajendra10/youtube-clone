@@ -13,13 +13,27 @@ import {
     PopoverContent,
 } from "@/components/ui/popover";
 
-import { useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
+import { fetchingUserChannel } from "../features/userSlice";
 
 export default function Navbar() {
-    const { currentUser } = useSelector((state) => state.user);
+    const { currentUser, accessToken } = useSelector((state) => state.user);
+
     const { toggleSidebar } = useSidebar();
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const getUserChannel = () => {
+        dispatch(fetchingUserChannel({ username: currentUser.username, accessToken }))
+        navigate("/channel", {
+            state: {
+                username: currentUser.username
+            }
+        })
+    }
 
     return (
         <nav className="sticky top-0 w-full h-16 bg-background  flex items-center justify-between px-4 z-5">
@@ -63,9 +77,9 @@ export default function Navbar() {
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Popover >
+                <Popover className="hidden">
                     <PopoverTrigger asChild>
-                        <button className="p-2 rounded-full hover:bg-muted transition">
+                        <button className="md:hidden p-2 rounded-full hover:bg-muted transition">
                             <Search className="w-5 h-5" />
                         </button>
                     </PopoverTrigger>
@@ -203,9 +217,12 @@ export default function Navbar() {
 
                         {/* Menu Items */}
                         <div className="py-1">
-                            <NavLink className="block w-full text-left px-4 py-2 text-sm hover:bg-muted" to="/channel" >
+                            <button
+                                className="w-full text-left px-4 py-2 text-sm hover:bg-muted"
+                                onClick={() => getUserChannel()}
+                            >
                                 Your channel
-                            </NavLink>
+                            </button>
 
                             <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
                                 YouTube Studio

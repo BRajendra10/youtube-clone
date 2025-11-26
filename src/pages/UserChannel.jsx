@@ -1,21 +1,24 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserChannel } from "../features/userSlice";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { toggleSubscribtion } from "../features/subscriptionSlice";
 
 export default function UserChannel() {
   const dispatch = useDispatch();
-  const { username } = useSelector((state) => state.user.currentUser);
-  const channel = useSelector((state) => state.user.userChannel);
+  // const channel = useSelector((state) => state.user.userChannel);
+  const { userChannel, accessToken } = useSelector((state) => state.user);
+  const { state } = useLocation();
 
-  useEffect(() => {
-    if (username) dispatch(getUserChannel(username));
-  }, [dispatch, username]);
+  const handleSubscribeAndUnsubscribe = (channelId)  => {
+    console.log(accessToken)
+    dispatch(toggleSubscribtion({channelId, accessToken}));
+  }
 
-  if (!channel)
+  if (!userChannel)
     return <div className="p-6 text-sm text-muted-foreground">Loading...</div>;
 
   return (
@@ -27,7 +30,7 @@ export default function UserChannel() {
           <div className="overflow-hidden rounded-lg sm:rounded-xl 
                           h-40 sm:h-52 md:h-60">
             <img
-              src={channel.coverImage}
+              src={userChannel.coverImage}
               alt="cover"
               className="w-full h-full object-cover object-center"
             />
@@ -42,7 +45,7 @@ export default function UserChannel() {
           {/* AVATAR */}
           <div className="shrink-0">
             <Avatar className="h-24 w-24 sm:h-32 sm:w-32 md:h-36 md:w-36 shadow-sm">
-              <AvatarImage src={channel.avatar} alt="avatar" />
+              <AvatarImage src={userChannel.avatar} alt="avatar" />
               <AvatarFallback className="text-xl">CH</AvatarFallback>
             </Avatar>
           </div>
@@ -51,30 +54,33 @@ export default function UserChannel() {
           <div className="flex flex-col justify-center mt-2 sm:mt-0">
 
             <h1 className="text-2xl sm:text-3xl font-semibold leading-tight truncate">
-              {channel.fullName}
+              {userChannel.fullName}
             </h1>
 
             <p className="text-sm text-muted-foreground truncate">
-              @{channel.username}
+              @{userChannel.username}
             </p>
 
             <p className="text-sm text-muted-foreground">
-              {channel.subscribersCount} subscribers •{" "}
-              {channel.channelsSubscribedToCount} subscribed
+              {userChannel.subscribersCount} subscribers •{" "}
+              {userChannel.channelsSubscribedToCount} subscribed
             </p>
 
             {/* BUTTONS */}
             <div className="flex flex-wrap gap-3 items-center mt-4">
-              <Button variant="outline" className="rounded-full px-5">
+              {state.username == userChannel.username && <Button 
+                variant="outline"         
+                className="rounded-full px-5">
                 Customize Channel
-              </Button>
+              </Button>}
 
-              <Button
+              {state.username !== userChannel.username && <Button
                 className="rounded-full px-6"
-                variant={channel.isSubscribed ? "secondary" : "default"}
+                variant={userChannel.isSubscribed ? "secondary" : "default"}
+                onClick={() => handleSubscribeAndUnsubscribe(userChannel._id)}
               >
-                {channel.isSubscribed ? "Subscribed" : "Subscribe"}
-              </Button>
+                {userChannel.isSubscribed ? "Subscribed" : "Subscribe"}
+              </Button>}
             </div>
 
           </div>

@@ -47,7 +47,7 @@ export default function Signup() {
 
     validationSchema,
 
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       // Prepare FormData for backend
       const formData = new FormData();
       formData.append("fullName", values.fullName);
@@ -57,8 +57,13 @@ export default function Signup() {
       formData.append("avatar", values.avatar);
       formData.append("coverImage", values.coverImage);
 
-      dispatch(RegisterUser(formData));
-      navigate("/")
+      try {
+        await dispatch(RegisterUser(formData)).unwrap();
+
+        navigate("/"); // navigation happens ONLY after success  
+      } catch (error) {
+        console.log("Registration failed:", error);
+      }
     },
   });
 
