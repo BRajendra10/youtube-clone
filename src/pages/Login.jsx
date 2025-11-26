@@ -34,8 +34,14 @@ export default function Login() {
         },
         validationSchema,
         onSubmit: async (values) => {
-            dispatch(LoginUser(values));
-            navigate("/");
+
+            try{
+                await dispatch(LoginUser(values));
+
+                navigate("/");
+            } catch (error) {
+                console.log("Login Failed !!", error)
+            }
         },
     });
 

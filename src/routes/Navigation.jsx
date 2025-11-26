@@ -16,7 +16,7 @@ export default function Navigation() {
         <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Logout />} />
+            <Route path="/register" element={<Logout />} />
 
             {/* Protected Layout */}
             <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>

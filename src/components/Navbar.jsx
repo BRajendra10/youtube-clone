@@ -16,7 +16,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
-import { getUserChannel } from "../features/userSlice";
+import { fetchingUserChannel } from "../features/userSlice";
 
 export default function Navbar() {
     const { currentUser, accessToken } = useSelector((state) => state.user);
@@ -26,8 +26,8 @@ export default function Navbar() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const goToUserChannel = () => {
-        dispatch(getUserChannel({ username: currentUser.username, accessToken }))
+    const getUserChannel = () => {
+        dispatch(fetchingUserChannel({ username: currentUser.username, accessToken }))
         navigate("/channel", {
             state: {
                 username: currentUser.username
@@ -219,7 +219,7 @@ export default function Navbar() {
                         <div className="py-1">
                             <button
                                 className="w-full text-left px-4 py-2 text-sm hover:bg-muted"
-                                onClick={() => goToUserChannel()}
+                                onClick={() => getUserChannel()}
                             >
                                 Your channel
                             </button>

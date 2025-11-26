@@ -17,7 +17,7 @@ export const LoginUser = createAsyncThunk("user/login", async ({ email, password
     return response.data.data;
 })
 
-export const getUserChannel = createAsyncThunk("user/channel", async ({ username, accessToken }) => {
+export const fetchingUserChannel = createAsyncThunk("user/channel", async ({ username, accessToken }) => {
     const response = await axios.get(`${url}/c/${username}`, {
         headers: {
             Authorization: `Bearer ${accessToken}`
@@ -66,14 +66,14 @@ const userSlice = createSlice({
             })
 
         builder
-            .addCase(getUserChannel.pending, (state) => {
+            .addCase(fetchingUserChannel.pending, (state) => {
                 state.reqStatus = "pending"
             })
-            .addCase(getUserChannel.fulfilled, (state, action) => {
+            .addCase(fetchingUserChannel.fulfilled, (state, action) => {
                 state.reqStatus = true
                 state.userChannel = action.payload;
             })
-            .addCase(getUserChannel.rejected, (state) => {
+            .addCase(fetchingUserChannel.rejected, (state) => {
                 state.reqStatus = "error"
             })
     }

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSubscribedTo, toggleSubscribtion } from "../features/subscriptionSlice";
 import { Card, CardContent } from "@/components/ui/card";
-import { getUserChannel } from "../features/userSlice";
+import { fetchingUserChannel } from "../features/userSlice";
 import { useNavigate } from "react-router-dom";
 
 export function Subscriptions() {
@@ -16,7 +16,7 @@ export function Subscriptions() {
     }, [dispatch, currentUser, accessToken]);
 
     const getSubscribtionChannel = (username) => {
-        dispatch(getUserChannel({ username, accessToken }))
+        dispatch(fetchingUserChannel({ username, accessToken }))
         navigate("/channel", {
             state: {
                 username: currentUser.username
