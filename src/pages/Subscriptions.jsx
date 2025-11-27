@@ -9,14 +9,14 @@ export function Subscriptions() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { subscribers } = useSelector((state) => state.subscription);
-    const { currentUser, accessToken } = useSelector((state) => state.user);
+    const { currentUser } = useSelector((state) => state.user);
 
     useEffect(() => {
-        dispatch(getSubscribedTo({ subscriberId: currentUser._id, accessToken }));
-    }, [dispatch, currentUser, accessToken]);
+        dispatch(getSubscribedTo({ subscriberId: currentUser._id}));
+    }, [dispatch, currentUser]);
 
     const getSubscribtionChannel = (username) => {
-        dispatch(fetchingUserChannel({ username, accessToken }))
+        dispatch(fetchingUserChannel({ username }))
         navigate("/channel", {
             state: {
                 username: currentUser.username

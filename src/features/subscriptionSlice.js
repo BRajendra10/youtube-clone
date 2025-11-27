@@ -1,28 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-// import { subscribe } from "diagnostics_channel";
+import { api } from "./axios.js";
 
-const url = 'http://localhost:8000/api/v1/subscriptions'
 
-export const toggleSubscribtion = createAsyncThunk("user/toggle/subscribtion", async ({channelId, accessToken}) => {
-    console.log(accessToken)
-    const response = await axios.post(`${url}/c/${channelId}`, {}, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-    })
+export const toggleSubscribtion = createAsyncThunk("user/toggle/subscribtion", async ({channelId }) => {
+    const response = await api.post(`/subscriptions/c/${channelId}`);
 
-    console.log(response)
-
-    return response.data.data;
+    return response.data;
 })
 
-export const getSubscribedTo = createAsyncThunk("user/subscribers", async ({subscriberId, accessToken}) => {
-    const response = await axios.get(`${url}/u/${subscriberId}`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-    })
+export const getSubscribedTo = createAsyncThunk("user/subscribers", async ({ subscriberId }) => {
+    const response = await api.get(`/subscriptions/u/${subscriberId}`);
 
     return response.data.data;
 })

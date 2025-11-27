@@ -9,13 +9,11 @@ import { toggleSubscribtion } from "../features/subscriptionSlice";
 
 export default function UserChannel() {
   const dispatch = useDispatch();
-  // const channel = useSelector((state) => state.user.userChannel);
-  const { userChannel, accessToken } = useSelector((state) => state.user);
+  const { userChannel } = useSelector((state) => state.user);
   const { state } = useLocation();
 
-  const handleSubscribeAndUnsubscribe = (channelId)  => {
-    console.log(accessToken)
-    dispatch(toggleSubscribtion({channelId, accessToken}));
+  const handleSubscribeAndUnsubscribe = (channelId) => {
+    dispatch(toggleSubscribtion({ channelId }));
   }
 
   if (!userChannel)
@@ -68,8 +66,8 @@ export default function UserChannel() {
 
             {/* BUTTONS */}
             <div className="flex flex-wrap gap-3 items-center mt-4">
-              {state.username == userChannel.username && <Button 
-                variant="outline"         
+              {state.username == userChannel.username && <Button
+                variant="outline"
                 className="rounded-full px-5">
                 Customize Channel
               </Button>}

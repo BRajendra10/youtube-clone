@@ -13,28 +13,41 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import { Subscriptions } from "../pages/Subscriptions.jsx";
 
-const rootReducer = combineReducers({
-  user: userReducer,
-  subscription: subscriptionReducer
-});
 
-const persistConfig = {
-  key: "root",
+// ✔ Persist only currentUser in user slice
+const userPersistConfig = {
+  key: "user",
   storage,
-  whitelist: ["user"],
+  whitelist: ["currentUser"],
 };
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const rootPersistConfig = {
+  key: "root",
+  storage,
+  whitelist: [], // No slices persisted at root
+};
+
+const rootReducer = combineReducers({
+  user: persistReducer(userPersistConfig, userReducer),
+  subscription: subscriptionReducer,
+});
+
+const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
-
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: [
+          FLUSH,
+          REHYDRATE,
+          PAUSE,
+          PERSIST,
+          PURGE,
+          REGISTER
+        ],
       },
     }),
 });

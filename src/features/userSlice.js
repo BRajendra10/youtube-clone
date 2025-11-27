@@ -1,28 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-const url = 'http://localhost:8000/api/v1/users'
+import { api } from "./axios.js";
 
 export const RegisterUser = createAsyncThunk("user/register", async (formData) => {
-    const response = await axios.post(`${url}/register`, formData);
+    const response = await api.post('/users/register', formData);
     return response.data.data;
 })
 
 export const LoginUser = createAsyncThunk("user/login", async ({ email, password }) => {
-    const response = await axios.post(`${url}/login`, {
-        email,
-        password
-    });
+    const response = await api.post('/users/login', { email, password });
 
     return response.data.data;
 })
 
-export const fetchingUserChannel = createAsyncThunk("user/channel", async ({ username, accessToken }) => {
-    const response = await axios.get(`${url}/c/${username}`, {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
-    });
+export const fetchingUserChannel = createAsyncThunk("user/channel", async ({ username }) => {
+    const response = await api.get(`/users/c/${username}`);
 
     return response.data.data;
 })
