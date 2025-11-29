@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getSubscribedTo, toggleSubscribtion } from "../features/subscriptionSlice";
+import { getSubscribedTo } from "../features/subscriptionSlice";
+import { toggleSubscribtion } from "../features/userSlice"
 import { Card, CardContent } from "@/components/ui/card";
-import { fetchingUserChannel } from "../features/userSlice";
 import { useNavigate } from "react-router-dom";
 
 export function Subscriptions() {
@@ -16,22 +16,11 @@ export function Subscriptions() {
     }, [dispatch, currentUser]);
 
     const getSubscribtionChannel = (username) => {
-        dispatch(fetchingUserChannel({ username }))
-        navigate("/channel", {
-            state: {
-                username: currentUser.username
-            }
-        });
+        navigate(`/${username}`);
     }
 
     const handleSubscribtionButton = (channelId) => {
         dispatch(toggleSubscribtion(channelId));
-        navigate("/channel", {
-            state: {
-                username: currentUser.username
-            }
-        });
-        console.log("hello world")
     }
 
     if (!subscribers)
@@ -77,8 +66,9 @@ export function Subscriptions() {
                                 {/* Subscribe Button */}
                                 <button className="px-5 py-2 rounded-full border border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-all duration-150"
                                     onClick={(e) => {
+                                        console.log(channel)
                                         e.stopPropagation()
-                                        handleSubscribtionButton(channel._id);
+                                        handleSubscribtionButton(channel.channelId);
                                     }}
                                 >
                                     unsubscribe

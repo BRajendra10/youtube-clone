@@ -22,7 +22,7 @@ export default function Navigation() {
             <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
                 <Route index element={<Videos />} />
                 <Route path="/subscriptions" element={<Subscriptions />} />
-                <Route path="/channel" element={<UserChannel />} />
+                <Route path="/:username" element={<UserChannel />} />
             </Route>
         </Routes>
     )

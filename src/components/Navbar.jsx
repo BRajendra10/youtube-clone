@@ -12,27 +12,25 @@ import {
     PopoverTrigger,
     PopoverContent,
 } from "@/components/ui/popover";
+import { Logout } from "../features/userSlice";
 
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
-import { fetchingUserChannel } from "../features/userSlice";
 
 export default function Navbar() {
-    const { currentUser, accessToken } = useSelector((state) => state.user);
-
+    const { currentUser } = useSelector((state) => state.user);
     const { toggleSidebar } = useSidebar();
-
-    const navigate = useNavigate();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const getUserChannel = () => {
-        dispatch(fetchingUserChannel({ username: currentUser.username, accessToken }))
-        navigate("/channel", {
-            state: {
-                username: currentUser.username
-            }
-        })
+    const getUserChannel = (username) => {
+        navigate(`/${username}`)
+    }
+
+    const LogoutUser = async () => {
+        await dispatch(Logout());
+        navigate("/login");
     }
 
     return (
@@ -219,7 +217,7 @@ export default function Navbar() {
                         <div className="py-1">
                             <button
                                 className="w-full text-left px-4 py-2 text-sm hover:bg-muted"
-                                onClick={() => getUserChannel()}
+                                onClick={() => getUserChannel(currentUser.username)}
                             >
                                 Your channel
                             </button>
@@ -232,7 +230,10 @@ export default function Navbar() {
                                 Switch account
                             </button>
 
-                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
+                            <button 
+                                className="w-full text-left px-4 py-2 text-sm hover:bg-muted"
+                                onClick={() => LogoutUser()}
+                                >
                                 Sign out
                             </button>
                         </div>

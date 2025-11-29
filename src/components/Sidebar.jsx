@@ -32,7 +32,7 @@ export default function AppSidebar() {
     const handleResize = () => {
       if (window.innerWidth > 1024) {
         setOpen(true)
-      }else{
+      } else {
         setOpen(false);
       }
 
