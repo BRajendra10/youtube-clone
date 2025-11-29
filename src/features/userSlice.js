@@ -11,13 +11,22 @@ export const LoginUser = createAsyncThunk("user/login", async ({ email, password
     return response.data.data;
 })
 
+export const Logout = createAsyncThunk("user/logout", async () => {
+    const response = await api.post("/users/logout");
+    return response.data;
+})
+
 export const fetchingUserChannel = createAsyncThunk("user/channel", async ({ username }) => {
     const response = await api.get(`/users/c/${username}`);
     return response.data.data;
 })
 
+export const updateUserProfile = createAsyncThunk("user/profile/update", async (formData) => {
+    const response = await api.patch("/users/update-profile", formData);
+    return response.data.data;
+})
+
 export const toggleSubscribtion = createAsyncThunk("user/toggle/subscribtion", async ({ channelId }) => {
-    console.log(channelId)
     const response = await api.post(`/subscriptions/c/${channelId}`);
     return response.data;
 })
@@ -69,7 +78,7 @@ const userSlice = createSlice({
                 state.userChannel = action.payload;
             })
             .addCase(fetchingUserChannel.rejected, (state) => {
-                state.reqStatus = "error"
+                state.reqStatus = "Rejected"
             })
 
         builder
@@ -86,7 +95,32 @@ const userSlice = createSlice({
                 }
             })
             .addCase(toggleSubscribtion.rejected, (state) => {
-                state.reqStatus = "Error";
+                state.reqStatus = "Rejected";
+            })
+
+        builder
+            .addCase(Logout.pending, (state) => {
+                state.reqStatus = "Error"
+            })
+            .addCase(Logout.fulfilled, (state) => {
+                state.reqStatus = true;
+                state.currentUser = null;
+                state.userChannel = null;
+            })
+            .addCase(Logout.rejected, (state) => {
+                state.reqStatus ="Rejected"
+            })
+
+        builder
+            .addCase(updateUserProfile.pending, (state) => {
+                state.reqStatus = "pending"
+            })
+            .addCase(updateUserProfile.fulfilled, (state, action) => {
+                state.currentUser = action.payload;
+                state.reqStatus = true;
+            })
+            .addCase(updateUserProfile.rejected, (state) => {
+                state.reqStatus = "error"
             })
     }
 })

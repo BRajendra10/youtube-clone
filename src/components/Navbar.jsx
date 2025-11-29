@@ -12,19 +12,25 @@ import {
     PopoverTrigger,
     PopoverContent,
 } from "@/components/ui/popover";
+import { Logout } from "../features/userSlice";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 
 export default function Navbar() {
     const { currentUser } = useSelector((state) => state.user);
     const { toggleSidebar } = useSidebar();
-
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const getUserChannel = (username) => {
         navigate(`/${username}`)
+    }
+
+    const LogoutUser = async () => {
+        await dispatch(Logout());
+        navigate("/login");
     }
 
     return (
@@ -224,7 +230,10 @@ export default function Navbar() {
                                 Switch account
                             </button>
 
-                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
+                            <button 
+                                className="w-full text-left px-4 py-2 text-sm hover:bg-muted"
+                                onClick={() => LogoutUser()}
+                                >
                                 Sign out
                             </button>
                         </div>

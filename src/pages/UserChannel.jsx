@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -6,16 +6,19 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { fetchingUserChannel, toggleSubscribtion } from "../features/userSlice";
+import EditProfileModal from "../components/EditProfileModal";
 
 export default function UserChannel() {
   const dispatch = useDispatch();
-  const { userChannel, currentUser } = useSelector((state) => state.user);
   const { username } = useParams();
+  const { userChannel, currentUser } = useSelector((state) => state.user);
+
+  const [editOpen, setEditOpen] = useState(false);
+
 
   useEffect(() => {
     ; (async () => {
       await dispatch(fetchingUserChannel({ username }))
-
     })();
   }, [dispatch, username])
 
@@ -28,6 +31,7 @@ export default function UserChannel() {
 
   return (
     <div className="w-full flex flex-col">
+      <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} />
 
       {/* ================= COVER IMAGE ================= */}
       <div className="w-full py-2 sm:py-4">
@@ -75,7 +79,9 @@ export default function UserChannel() {
             <div className="flex flex-wrap gap-3 items-center mt-4">
               {username === currentUser.username && <Button
                 variant="outline"
-                className="rounded-full px-5">
+                className="rounded-full px-5"
+                onClick={() => setEditOpen(true)}
+              >
                 Customize Channel
               </Button>}
 
