@@ -1,22 +1,29 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { toggleSubscribtion } from "../features/subscriptionSlice";
+import { fetchingUserChannel, toggleSubscribtion } from "../features/userSlice";
 
 export default function UserChannel() {
   const dispatch = useDispatch();
-  const { userChannel } = useSelector((state) => state.user);
-  const { state } = useLocation();
+  const { userChannel, currentUser } = useSelector((state) => state.user);
+  const { username } = useParams();
+
+  useEffect(() => {
+    ; (async () => {
+      await dispatch(fetchingUserChannel({ username }))
+
+    })();
+  }, [dispatch, username])
 
   const handleSubscribeAndUnsubscribe = (channelId) => {
     dispatch(toggleSubscribtion({ channelId }));
   }
 
-  if (!userChannel)
+  if (!userChannel || userChannel.username !== username)
     return <div className="p-6 text-sm text-muted-foreground">Loading...</div>;
 
   return (
@@ -66,14 +73,14 @@ export default function UserChannel() {
 
             {/* BUTTONS */}
             <div className="flex flex-wrap gap-3 items-center mt-4">
-              {state.username == userChannel.username && <Button
+              {username === currentUser.username && <Button
                 variant="outline"
                 className="rounded-full px-5">
                 Customize Channel
               </Button>}
 
-              {state.username !== userChannel.username && <Button
-                className="rounded-full px-6"
+              {username !== currentUser.username && <Button
+                className="rounded-full px-6 transition-all duration-200"
                 variant={userChannel.isSubscribed ? "secondary" : "default"}
                 onClick={() => handleSubscribeAndUnsubscribe(userChannel._id)}
               >

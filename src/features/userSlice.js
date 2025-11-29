@@ -8,14 +8,18 @@ export const RegisterUser = createAsyncThunk("user/register", async (formData) =
 
 export const LoginUser = createAsyncThunk("user/login", async ({ email, password }) => {
     const response = await api.post('/users/login', { email, password });
-
     return response.data.data;
 })
 
 export const fetchingUserChannel = createAsyncThunk("user/channel", async ({ username }) => {
     const response = await api.get(`/users/c/${username}`);
-
     return response.data.data;
+})
+
+export const toggleSubscribtion = createAsyncThunk("user/toggle/subscribtion", async ({ channelId }) => {
+    console.log(channelId)
+    const response = await api.post(`/subscriptions/c/${channelId}`);
+    return response.data;
 })
 
 const initialState = {
@@ -66,6 +70,23 @@ const userSlice = createSlice({
             })
             .addCase(fetchingUserChannel.rejected, (state) => {
                 state.reqStatus = "error"
+            })
+
+        builder
+            .addCase(toggleSubscribtion.pending, (state) => {
+                state.reqStatus = "Error";
+            })
+            .addCase(toggleSubscribtion.fulfilled, (state, action) => {
+                state.reqStatus = true;
+                if (state.userChannel) {
+                    state.userChannel.isSubscribed = action.payload.isSubscribed;
+                    state.userChannel.subscribersCount = action.payload.subscribersCount;
+
+                    console.log("hello world")
+                }
+            })
+            .addCase(toggleSubscribtion.rejected, (state) => {
+                state.reqStatus = "Error";
             })
     }
 })
