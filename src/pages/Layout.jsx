@@ -1,7 +1,7 @@
 import React from "react";
+import { Outlet } from "react-router-dom";
 import AppSidebar from "../components/Sidebar.jsx";
 import Navbar from "../components/Navbar.jsx";
-import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarInset } from "../components/ui/sidebar.jsx";
 
 export default function Layout() {

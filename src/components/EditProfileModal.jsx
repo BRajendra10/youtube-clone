@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile } from "../features/userSlice";
+import { toast } from "sonner";
 
 export default function EditProfileModal({ open, onClose }) {
     const dispatch = useDispatch();
@@ -34,10 +35,21 @@ export default function EditProfileModal({ open, onClose }) {
         if (avatar) formData.append("avatar", avatar);
         if (coverImage) formData.append("coverImage", coverImage);
 
-        await dispatch(updateUserProfile(formData));
+        try {
+            const res = await dispatch(updateUserProfile(formData));
 
-        onClose();
+            if (res.meta.requestStatus === "fulfilled") {
+                toast.success("Profile updated successfully!");
+                onClose();
+            } else {
+                toast.error(res.payload || "Failed to update profile");
+            }
+        } catch (error) {
+            toast.error("Something went wrong!");
+            console.log(error);
+        }
     };
+
 
     return (
         <Dialog open={open} onOpenChange={onClose}>

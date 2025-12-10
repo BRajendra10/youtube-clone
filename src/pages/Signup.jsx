@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 import { useDispatch } from "react-redux";
 import { RegisterUser } from "../features/userSlice";
@@ -61,8 +62,10 @@ export default function Signup() {
         await dispatch(RegisterUser(formData)).unwrap();
 
         navigate("/"); // navigation happens ONLY after success  
+        toast.success("User registered successfully")
       } catch (error) {
         console.log("Registration failed:", error);
+        toast.warning("Registration failed ! try again")
       }
     },
   });

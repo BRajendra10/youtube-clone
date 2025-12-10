@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -34,13 +35,14 @@ export default function Login() {
         },
         validationSchema,
         onSubmit: async (values) => {
-
-            try{
+            try {
                 await dispatch(LoginUser(values));
 
                 navigate("/");
+                toast.success("Loged-in successfully!");
             } catch (error) {
-                console.log("Login Failed !!", error)
+                console.log("Login Failed !!", error);
+                toast.warning("Login failed ! try again")
             }
         },
     });

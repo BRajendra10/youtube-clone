@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Search, Plus, Bell, Settings, TvMinimalPlay, SquarePen, Menu } from 'lucide-react';
 import {
     DropdownMenu,
@@ -17,15 +17,29 @@ import { Logout } from "../features/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
+import { fetchAllVideos } from "../features/videoSlice";
 
 export default function Navbar() {
     const { currentUser } = useSelector((state) => state.user);
     const { toggleSidebar } = useSidebar();
+    const [search, setSearch] = useState();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const getUserChannel = (username) => {
         navigate(`/${username}`)
+    }
+
+    const handleSearch = (search) => {
+        dispatch(
+            fetchAllVideos({
+                page: 1,
+                limit: 20,
+                query: search,
+                sortBy: "createdAt",
+                sortType: "desc",
+            })
+        );
     }
 
     const LogoutUser = async () => {
@@ -51,10 +65,12 @@ export default function Navbar() {
                         type="text"
                         placeholder="Search"
                         className="w-full h-10 border rounded-l-full px-4 outline-none"
+                        onChange={(e) => setSearch(e.target.value)}
                     />
 
                     <button
                         className="h-10 w-12 border border-l-0 rounded-r-full flex items-center justify-center"
+                        onClick={() => handleSearch(search)}
                     >
                         <Search size={20} />
                     </button>
@@ -70,7 +86,7 @@ export default function Navbar() {
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent className="relative left-8 w-40 dark bg-muted">
-                        <DropdownMenuItem className="flex items-center gap-3"> <TvMinimalPlay className="w-6 h-6" /> Upload video</DropdownMenuItem>
+                        <DropdownMenuItem className="flex items-center gap-3" onClick={() => navigate("/upload-video")}> <TvMinimalPlay className="w-6 h-6" /> Upload video</DropdownMenuItem>
                         <DropdownMenuItem className="flex items-center gap-3"> <SquarePen /> Create a post</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -230,10 +246,10 @@ export default function Navbar() {
                                 Switch account
                             </button>
 
-                            <button 
+                            <button
                                 className="w-full text-left px-4 py-2 text-sm hover:bg-muted"
                                 onClick={() => LogoutUser()}
-                                >
+                            >
                                 Sign out
                             </button>
                         </div>

@@ -18,7 +18,7 @@ const subscriptionSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getSubscribedTo.pending, (state) => {
-                state.reqStatus = "Error";
+                state.reqStatus = "Pending";
             })
             .addCase(getSubscribedTo.fulfilled, (state, action) => {
                 state.reqStatus = true;

@@ -1,29 +1,44 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Layout from '../pages/Layout';
+import Layout from "../pages/Layout";
 import Login from "../pages/Login";
-import Logout from "../pages/Signup";
-
-import Videos from "../components/Videos";
+import Signup from "../pages/Signup"; // fixed import name
 import PrivateRoute from "./PrivateRoute";
 import UserChannel from "../pages/UserChannel";
-import { Subscriptions } from "../pages/Subscriptions";
-
+import Subscriptions from "../pages/Subscriptions";
+import UploadVideo from "../components/UploadVideo";
+import HomePage from "../pages/Home";
+import SingleVideoPage from "../components/SingleVideoPage"; // new component
 
 export default function Navigation() {
-    return (
-        <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Logout />} />
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Signup />} />
 
-            {/* Protected Layout */}
-            <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
-                <Route index element={<Videos />} />
-                <Route path="/subscriptions" element={<Subscriptions />} />
-                <Route path="/:username" element={<UserChannel />} />
-            </Route>
-        </Routes>
-    )
+      {/* Protected Layout */}
+      <Route
+        path="/"
+        element={
+          <PrivateRoute>
+            <Layout />
+          </PrivateRoute>
+        }
+      >
+        <Route index element={<HomePage />} />
+        <Route path="/subscriptions" element={<Subscriptions />} />
+        <Route path="/upload-video" element={<UploadVideo />} />
+        <Route path="/:username" element={<UserChannel />} />
+        <Route path="/edit/:videoId" element={<UploadVideo />} />
+
+        {/* Single Video Route */}
+        <Route path="/video/:videoId" element={<SingleVideoPage />} />
+      </Route>
+
+      {/* Fallback route for unknown URLs */}
+      <Route path="*" element={<p className="text-white text-center mt-20">404 - Page Not Found</p>} />
+    </Routes>
+  );
 }
