@@ -6,6 +6,7 @@ import { getSubscribedTo } from "../features/subscriptionSlice";
 import { toggleSubscribtion } from "../features/userSlice";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 // =========================
 // Main Component
@@ -20,16 +21,21 @@ export default function Subscriptions() {
     // Fetch Subscriptions
     useEffect(() => {
         if (currentUser?._id) {
-            dispatch(getSubscribedTo({ subscriberId: currentUser._id }));
+            dispatch(getSubscribedTo({ subscriberId: currentUser._id }))
+                .unwrap()
+                .catch(() => toast.error("Failed to fetch user subscribers !!"))
         }
-    }, [dispatch, currentUser]);
+    }, [dispatch, currentUser._id]);
 
     // Navigate to channel
     const openChannel = (username) => navigate(`/${username}`);
 
     // Unsubscribe button handler
     const handleUnsubscribe = (channelId) => {
-        dispatch(toggleSubscribtion(channelId));
+        dispatch(toggleSubscribtion(channelId))
+            .unwrap()
+            .then(() => toast.success("toggle subscription successfully"))
+            .catch(() => toast.error("Failed to toggle subscription !!"))
     };
 
     // Loading State
@@ -56,6 +62,7 @@ export default function Subscriptions() {
                             className="bg-neutral-900/70 border border-neutral-800 rounded-2xl backdrop-blur-sm p-4 cursor-pointer"
                             onClick={() => openChannel(channel.username)}
                         >
+                            {/* {console.log(channel.channelId)} */}
                             <CardContent className="flex items-center gap-6">
 
                                 {/* Avatar */}

@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { SidebarTrigger, useSidebar } from "./ui/sidebar";
 import { fetchAllVideos } from "../features/videoSlice";
+import { toast } from "sonner";
 
 export default function Navbar() {
     const { currentUser } = useSelector((state) => state.user);
@@ -42,9 +43,15 @@ export default function Navbar() {
         );
     }
 
-    const LogoutUser = async () => {
-        await dispatch(Logout());
-        navigate("/login");
+    const LogoutUser = () => {
+        dispatch(Logout())
+            .unwrap()
+            .then(() => toast.success("Video added to playlist successfully"))
+            .catch(() => {
+                toast.error("Failed to add video !!") 
+                navigate("/login")
+            })
+        
     }
 
     return (

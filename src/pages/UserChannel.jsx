@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 // UI Components
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -16,6 +23,8 @@ import { fetchingUserChannel, toggleSubscribtion } from "../features/userSlice";
 import { deleteVideo, fetchAllVideos } from "../features/videoSlice";
 import { updateUserProfile } from "../features/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { deletePlaylist, fetchUserPlaylists } from "../features/playlistSlice";
+import { ListVideo, MoreVertical } from "lucide-react";
 
 export function EditProfileModal({ open, onClose }) {
   const dispatch = useDispatch();
@@ -188,6 +197,7 @@ export default function UserChannel() {
 
   const { userChannel, currentUser } = useSelector((state) => state.user);
   const { videos, fetchStatus } = useSelector((state) => state.video);
+  const { playlists } = useSelector((state) => state.playlist);
 
   const [editOpen, setEditOpen] = useState(false);
 
@@ -208,7 +218,9 @@ export default function UserChannel() {
         userId: userChannel._id,
       })
     );
-  }, [dispatch, userChannel?._id]);
+
+    dispatch(fetchUserPlaylists(userChannel._id))
+  }, [dispatch, userChannel]);
 
   const handleDelete = async (videoId) => {
     if (!confirm("Delete this video permanently?")) return;
@@ -234,6 +246,12 @@ export default function UserChannel() {
       toast.error(error?.message || "Action failed");
     }
   };
+
+  const handleDeletePlaylist = async (playlistId) => {
+    await dispatch(deletePlaylist(playlistId))
+
+    console.log("playlist deleted successfully", playlistId)
+  }
 
   if (!userChannel || userChannel.username !== username) {
     return <UserChannelSkeleton />;
@@ -314,7 +332,7 @@ export default function UserChannel() {
         >
           {/* TAB BUTTONS */}
           <TabsList className="flex gap-3 bg-transparent p-0 mt-3">
-            {["videos", "posts", "about"].map((tab) => (
+            {["videos", "posts", "playlists", "about"].map((tab) => (
               <TabsTrigger
                 key={tab}
                 value={tab}
@@ -389,11 +407,85 @@ export default function UserChannel() {
           </TabsContent>
 
           {/* ==================== ABOUT TAB ==================== */}
-          <TabsContent value="about" className="py-8 space-y-3">
-            <p className="text-sm text-muted-foreground">
-              This channel has no description yet.
-            </p>
+          <TabsContent value="playlists" className="py-8">
+            {/* LOADING STATE */}
+            {fetchStatus === "loading" && (
+              <p className="text-sm text-muted-foreground">Loading playlists...</p>
+            )}
+
+            {/* EMPTY STATE */}
+            {fetchStatus === "success" && playlists.length === 0 && (
+              <p className="text-sm text-muted-foreground">No playlists yet.</p>
+            )}
+
+            {/* PLAYLIST GRID */}
+            {fetchStatus === "success" && playlists.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {playlists.map((item, index) => (
+                  <div
+                    key={index}
+                    className="relative group rounded-xl bg-[#181818] hover:bg-[#202020] transition overflow-hidden"
+                  >
+                    {/* THUMBNAIL */}
+                    <Link to={`/playlist/${item._id}/video/${item.videos[0]}`}>
+                      <div className="relative">
+                        <img
+                          src={`https://picsum.photos/600/350?random=${index + 1}`}
+                          className="w-full h-36 rounded-t-xl object-cover"
+                        />
+
+                        {/* COUNT BADGE */}
+                        <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 text-xs flex items-center gap-1 rounded">
+                          <ListVideo size={14} />
+                          {item.count} videos
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* PLAYLIST NAME */}
+                    <div className="p-2">
+                      <h3 className="text-sm font-medium line-clamp-1">{item.name}</h3>
+
+                      {item.updatedAt && (
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                          {item.updatedAt}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* OPTIONS ONLY FOR OWNER */}
+                    {currentUser._id === userChannel._id && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="absolute top-2 right-2 p-2 rounded-full bg-black/60 hover:bg-black/80 opacity-0 group-hover:opacity-100 transition">
+                            <MoreVertical size={18} />
+                          </button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-40 bg-[#1f1f1f] text-white border border-neutral-700"
+                        >
+                          <DropdownMenuItem>Edit Playlist</DropdownMenuItem>
+                          <DropdownMenuItem>Share</DropdownMenuItem>
+
+                          <DropdownMenuSeparator className="bg-neutral-700" />
+
+                          <DropdownMenuItem
+                            className="text-red-400"
+                            onClick={() => handleDeletePlaylist(item._id)}
+                          >
+                            Delete Playlist
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </TabsContent>
+
         </Tabs>
       </div>
     </div>

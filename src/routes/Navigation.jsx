@@ -10,6 +10,8 @@ import Subscriptions from "../pages/Subscriptions";
 import UploadVideo from "../components/UploadVideo";
 import HomePage from "../pages/Home";
 import SingleVideoPage from "../components/SingleVideoPage"; // new component
+import PlaylistPage from "../pages/Playlists";
+import SinglePlaylistPage from "../components/SinglePlaylistPage";
 
 export default function Navigation() {
   return (
@@ -32,6 +34,9 @@ export default function Navigation() {
         <Route path="/upload-video" element={<UploadVideo />} />
         <Route path="/:username" element={<UserChannel />} />
         <Route path="/edit/:videoId" element={<UploadVideo />} />
+        <Route path="/playlists" element={<PlaylistPage />} />
+        <Route path="/playlist/:playlistId/video/:videoId" element={<SingleVideoPage />} />
+        <Route path="/my-playlist/:playlistId" element={<SinglePlaylistPage />} />
 
         {/* Single Video Route */}
         <Route path="/video/:videoId" element={<SingleVideoPage />} />

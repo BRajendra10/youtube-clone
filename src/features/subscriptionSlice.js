@@ -1,11 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "./axios.js";
 
-export const getSubscribedTo = createAsyncThunk("user/subscribers", async ({ subscriberId }) => {
-    const response = await api.get(`/subscriptions/u/${subscriberId}`);
+export const getSubscribedTo = createAsyncThunk(
+    "user/subscribers",
+    async ({ subscriberId }, { rejectWithValue }) => {
+        try {
+            const response = await api.get(`/subscriptions/u/${subscriberId}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
 
-    return response.data.data;
-})
 
 const initialState = {
     subscribers: null,

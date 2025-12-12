@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,10 +19,12 @@ const videoSchema = Yup.object().shape({
 export default function VideoForm() {
   const { videoId } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const isEdit = Boolean(videoId); // <--- Auto detect mode
 
   const { selectedVideo, loading } = useSelector((state) => state.video);
+  const { currentUser } = useSelector((state) => state.user);
 
   const [videoPreview, setVideoPreview] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -54,7 +56,7 @@ export default function VideoForm() {
             thumbnail: null,
           }}
           validationSchema={videoSchema}
-          onSubmit={async (values) => {
+          onSubmit={(values) => {
             const formData = new FormData();
 
             formData.append("title", values.title);
@@ -63,28 +65,19 @@ export default function VideoForm() {
             if (values.videoFile) formData.append("videoFile", values.videoFile);
             if (values.thumbnail) formData.append("thumbnail", values.thumbnail);
 
-            try {
-              if (isEdit) {
-                const res = await dispatch(updateVideo({ videoId, formData }));
-
-                if (res.meta.requestStatus === "fulfilled") {
-                  toast.success("Video updated successfully!");
-                } else {
-                  toast.error(res.payload || "Failed to update video");
-                }
-              } else {
-                const res = await dispatch(uploadVideo(formData));
-
-                if (res.meta.requestStatus === "fulfilled") {
-                  toast.success("Video uploaded successfully!");
-                } else {
-                  toast.error(res.payload || "Failed to upload video");
-                }
-              }
-            } catch (err) {
-              toast.error("Something went wrong!");
-              console.log(err);
+            if (isEdit) {
+              dispatch(updateVideo({ videoId, formData }))
+                .unwrap()
+                .then(() => toast.success("Video updated successfully"))
+                .catch(() => toast.error("Failed to update video playlist !!"))
+            } else {
+              dispatch(uploadVideo(formData))
+                .unwrap()
+                .then(() => toast.success("Video uploaded successfully"))
+                .catch(() => toast.error("Failed to upload video !!"))
             }
+
+            navigate(`/${currentUser.username}`)
           }}
 
         >

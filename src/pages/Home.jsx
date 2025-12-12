@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -9,6 +9,16 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical } from "lucide-react";
+import SaveToPlaylistDialog from "../components/SaveToPlaylistDialog.jsx";
+import { toast } from "sonner";
 
 // =========================
 // Helpers
@@ -23,9 +33,6 @@ function formatDuration(seconds) {
     return `${mins}:${secs}`;
 }
 
-// =========================
-// Skeleton Component
-// =========================
 const VideoSkeleton = () => (
     <div className="group cursor-pointer rounded-xl overflow-hidden bg-neutral-900 animate-pulse">
 
@@ -54,6 +61,8 @@ const VideoSkeleton = () => (
 export default function HomePage() {
     const dispatch = useDispatch();
     const { videos, fetchStatus } = useSelector((state) => state.video);
+    const [selectedVideo, setSelectedVideo] = useState(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         dispatch(
@@ -64,7 +73,8 @@ export default function HomePage() {
                 sortBy: "createdAt",
                 sortType: "desc",
             })
-        );
+        ).unwrap()
+            .catch(() => toast.error("Failed to fetch videos !!") )
     }, [dispatch]);
 
     const isLoading = fetchStatus === "pending";
@@ -84,10 +94,14 @@ export default function HomePage() {
 
                 {/* Videos */}
                 {!isLoading && videos?.length > 0 &&
-                    videos.map((video) => (
-                        <Link key={video._id} to={`/video/${video._id}`}>
-                            <div className="group cursor-pointer rounded-xl overflow-hidden bg-neutral-800 hover:bg-neutral-700 transition-colors">
+                    videos.map((video, index) => (
+                        <div
+                            key={index}
+                            className="group cursor-pointer rounded-xl overflow-hidden bg-neutral-800 hover:bg-neutral-700 transition-colors relative"
+                        >
 
+                            {/* CLICKABLE AREA */}
+                            <Link to={`/video/${video._id}`}>
                                 {/* Thumbnail */}
                                 <AspectRatio ratio={16 / 9} className="relative w-full">
                                     <img
@@ -124,8 +138,37 @@ export default function HomePage() {
                                         </p>
                                     </div>
                                 </div>
-                            </div>
-                        </Link>
+                            </Link>
+
+                            {/* MENU */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="absolute top-3 right-3 p-2 rounded-full bg-black/60 hover:bg-black/80 z-20"
+                                    >
+                                        <MoreVertical size={18} />
+                                    </button>
+                                </DropdownMenuTrigger>
+
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="w-40 bg-[#1f1f1f] text-white border border-neutral-700"
+                                >
+                                    <DropdownMenuItem
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedVideo(video._id);
+                                            setIsDialogOpen(true);
+                                        }}
+                                    >
+                                        Save to Playlist
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>Watch latter</DropdownMenuItem>
+                                    <DropdownMenuItem>Share</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     ))}
 
                 {/* No Videos */}
@@ -133,6 +176,13 @@ export default function HomePage() {
                     <p className="text-gray-300">No videos found.</p>
                 )}
             </div>
+
+            <SaveToPlaylistDialog
+                open={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                videoId={selectedVideo}
+            />
+
         </div>
     );
 }

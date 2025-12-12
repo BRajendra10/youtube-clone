@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userReducer from "../features/userSlice.js";
 import subscriptionReducer from "../features/subscriptionSlice.js";
 import videoReducers from '../features/videoSlice.js'
+import playlistReducers from '../features/playlistSlice.js';
 
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
@@ -32,7 +33,8 @@ const rootPersistConfig = {
 const rootReducer = combineReducers({
   user: persistReducer(userPersistConfig, userReducer),
   subscription: subscriptionReducer,
-  video: videoReducers
+  video: videoReducers,
+  playlist: playlistReducers,
 });
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
