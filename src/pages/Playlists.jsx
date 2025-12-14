@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { MoreVertical, ListVideo, Plus } from "lucide-react";
+import { MoreVertical, ListVideo, Plus, Pencil, Share2, Trash } from "lucide-react";
+
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -124,26 +125,12 @@ export default function PlaylistsPage() {
             .catch(() => toast.error("Playlist delete failed !!"))
     }
 
-    const tabs = ["Recently added", "Playlists", "Music", "Courses", "Owned", "Saved"];
-
     return (
-        <div className="min-h-screen bg-[#0f0f0f] text-white p-6">
+        <div className="min-h-screen text-white p-6">
 
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-3xl font-semibold">Playlists</h1>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex gap-3 overflow-x-auto pb-4">
-                {tabs.map((tab, i) => (
-                    <button
-                        key={i}
-                        className="px-4 py-2 bg-[#272727] rounded-full text-sm hover:bg-[#3a3a3a] whitespace-nowrap"
-                    >
-                        {tab}
-                    </button>
-                ))}
+                <h1 className="text-3xl font-bold">Playlists</h1>
             </div>
 
             {/* Playlists Grid */}
@@ -151,9 +138,8 @@ export default function PlaylistsPage() {
                 {playlists.map((item, index) => (
                     <Link to={`/my-playlist/${item._id}`} key={index}>
                         <div
-                            className="bg-[#181818] rounded-xl overflow-hidden hover:bg-[#202020] transition relative"
+                            className="rounded-xl overflow-hidden hover:bg-[#202020] transition relative"
                         >
-
                             {/* Playlist Thumbnail */}
                             <div className="relative">
                                 <img
@@ -164,7 +150,7 @@ export default function PlaylistsPage() {
                                 {/* Count Badge */}
                                 <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 text-xs flex items-center gap-1 rounded">
                                     <ListVideo size={14} />
-                                    {item.count} videos
+                                    {item.videos.length} video
                                 </div>
                             </div>
 
@@ -172,15 +158,20 @@ export default function PlaylistsPage() {
                             <div className="p-3">
                                 <h2 className="text-base font-medium truncate">{item.name}</h2>
 
-                                {item.updatedAt && (
-                                    <p className="text-xs text-gray-500 mt-1">{item.updatedAt}</p>
-                                )}
+                                <p className="text-sm text-gray-500 mt-1">
+                                    Uploaded{" "}
+                                    {new Date(item.createdAt).toLocaleDateString("en-IN", {
+                                        day: "numeric",
+                                        month: "short",
+                                        year: "numeric",
+                                    })}
+                                </p>
                             </div>
 
                             {/* Options Menu */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <button className="absolute top-3 right-3 p-2 rounded-full bg-black/60 hover:bg-black/80">
+                                    <button className="absolute bottom-5 right-3 p-2 rounded-full hover:bg-black/50">
                                         <MoreVertical size={18} />
                                     </button>
                                 </DropdownMenuTrigger>
@@ -194,22 +185,29 @@ export default function PlaylistsPage() {
                                             setEditPlaylist(item);
                                             setOpenModal(true);
                                         }}
+                                        className="group flex items-center gap-2"
                                     >
+                                        <Pencil className="h-4 w-4 text-neutral-400 group-hover:text-white" />
                                         Edit Playlist
                                     </DropdownMenuItem>
 
-                                    <DropdownMenuItem>Share</DropdownMenuItem>
+                                    <DropdownMenuItem className="group flex items-center gap-2">
+                                        <Share2 className="h-4 w-4 text-neutral-400 group-hover:text-white" />
+                                        Share
+                                    </DropdownMenuItem>
 
                                     <DropdownMenuSeparator className="bg-neutral-700" />
 
                                     <DropdownMenuItem
-                                        className="text-red-400"
+                                        className="group flex items-center gap-2"
                                         onClick={() => handleDeletePlaylist(item._id)}
                                     >
+                                        <Trash className="h-4 w-4 text-neutral-400 group-hover:text-white" />
                                         Delete Playlist
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
+
                         </div>
                     </Link>
                 ))}

@@ -16,13 +16,11 @@ import {
     DropdownMenuItem,
     DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical } from "lucide-react";
+import { Bookmark, Clock, Share2, MoreVertical } from "lucide-react";
 import SaveToPlaylistDialog from "../components/SaveToPlaylistDialog.jsx";
 import { toast } from "sonner";
 
-// =========================
-// Helpers
-// =========================
+
 function formatDuration(seconds) {
     if (!seconds) return "00:00";
 
@@ -55,9 +53,7 @@ const VideoSkeleton = () => (
     </div>
 );
 
-// =========================
-// Main Component
-// =========================
+
 export default function HomePage() {
     const dispatch = useDispatch();
     const { videos, fetchStatus } = useSelector((state) => state.video);
@@ -74,7 +70,7 @@ export default function HomePage() {
                 sortType: "desc",
             })
         ).unwrap()
-            .catch(() => toast.error("Failed to fetch videos !!") )
+            .catch(() => toast.error("Failed to fetch videos !!"))
     }, [dispatch]);
 
     const isLoading = fetchStatus === "pending";
@@ -82,7 +78,7 @@ export default function HomePage() {
     const isSuccess = fetchStatus === "success";
 
     return (
-        <div className="min-h-screen w-full bg-neutral-950 text-white p-6">
+        <div className="min-h-screen w-full bg-background text-foreground p-6">
 
             {isError && <p className="text-red-400">Failed to load videos</p>}
 
@@ -97,7 +93,7 @@ export default function HomePage() {
                     videos.map((video, index) => (
                         <div
                             key={index}
-                            className="group cursor-pointer rounded-xl overflow-hidden bg-neutral-800 hover:bg-neutral-700 transition-colors relative"
+                            className="group cursor-pointer rounded-xl overflow-hidden hover:bg-neutral-700 transition-colors relative"
                         >
 
                             {/* CLICKABLE AREA */}
@@ -127,14 +123,19 @@ export default function HomePage() {
                                         <h2 className="text-sm font-medium line-clamp-2">
                                             {video.title}
                                         </h2>
+                                        {/* {console.log(video.owner.username)} */}
 
-                                        <p className="text-xs text-gray-400 line-clamp-2">
-                                            {video.description}
+                                        <p className="text-sm font-semibold text-gray-400 line-clamp-2">
+                                            {video.owner.username}
                                         </p>
 
                                         <p className="text-[11px] text-gray-500 mt-1">
-                                            Uploaded:{" "}
-                                            {new Date(video.createdAt).toLocaleDateString()}
+                                            Uploaded{" "}
+                                            {new Date(video.createdAt).toLocaleDateString("en-IN", {
+                                                day: "numeric",
+                                                month: "short",
+                                                year: "numeric",
+                                            })}
                                         </p>
                                     </div>
                                 </div>
@@ -145,7 +146,7 @@ export default function HomePage() {
                                 <DropdownMenuTrigger asChild>
                                     <button
                                         onClick={(e) => e.stopPropagation()}
-                                        className="absolute top-3 right-3 p-2 rounded-full bg-black/60 hover:bg-black/80 z-20"
+                                        className="absolute bottom-11 right-1 p-2 rounded-full hover:bg-black/80 z-20"
                                     >
                                         <MoreVertical size={18} />
                                     </button>
@@ -162,10 +163,17 @@ export default function HomePage() {
                                             setIsDialogOpen(true);
                                         }}
                                     >
+                                        <Bookmark className="h-4 w-4 text-neutral-300" />
                                         Save to Playlist
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem>Watch latter</DropdownMenuItem>
-                                    <DropdownMenuItem>Share</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Clock className="h-4 w-4 text-neutral-300" />
+                                        Watch latter
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Share2 className="h-4 w-4 text-neutral-300" />
+                                        Share
+                                    </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>

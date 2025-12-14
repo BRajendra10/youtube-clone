@@ -7,6 +7,7 @@ import { toggleSubscribtion } from "../features/userSlice";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
+import { Calendar } from "lucide-react";
 
 // =========================
 // Main Component
@@ -63,43 +64,42 @@ export default function Subscriptions() {
                             onClick={() => openChannel(channel.username)}
                         >
                             {/* {console.log(channel.channelId)} */}
-                            <CardContent className="flex items-center gap-6">
-
+                            <CardContent className="flex items-center gap-4 sm:gap-6">
                                 {/* Avatar */}
                                 <img
                                     src={channel.avatar}
                                     alt={channel.username}
-                                    className="w-20 h-20 rounded-full object-cover ring-2 ring-neutral-800"
+                                    className="w-14 h-14 sm:w-20 sm:h-20 rounded-full object-cover ring-2 ring-neutral-800 shrink-0"
                                 />
 
-                                {/* Channel Info */}
-                                <div className="flex flex-col flex-1">
-                                    <h3 className="text-xl font-semibold">
-                                        {channel.username}
-                                    </h3>
+                                {/* Right Side Container */}
+                                <div className="flex flex-col flex-1 gap-2">
+                                    {/* User Info */}
+                                    <div>
+                                        <h3 className="text-base sm:text-xl font-semibold leading-tight">
+                                            {channel.username}
+                                        </h3>
 
-                                    <span className="text-sm text-neutral-400">
-                                        {channel.email}
-                                    </span>
+                                        <p className="text-[11px] sm:text-xs text-neutral-500 mt-1 flex items-center gap-1">
+                                            <Calendar className="h-3 w-3" />
+                                            Subscribed on{" "}
+                                            {new Date(channel.subscribedAt).toLocaleDateString()}
+                                        </p>
+                                    </div>
 
-                                    <span className="text-xs text-neutral-500 mt-1 flex items-center gap-1">
-                                        <span>📅</span>
-                                        Subscribed on{" "}
-                                        {new Date(channel.subscribedAt).toLocaleDateString()}
-                                    </span>
+                                    {/* Button */}
+                                    <button
+                                        className="self-start mt-1 px-4 py-1.5 rounded-full border border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleUnsubscribe(channel.channelId);
+                                        }}
+                                    >
+                                        Unsubscribe
+                                    </button>
                                 </div>
-
-                                {/* Unsubscribe Button */}
-                                <button
-                                    className="px-5 py-2 rounded-full border border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-all duration-150"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleUnsubscribe(channel.channelId);
-                                    }}
-                                >
-                                    unsubscribe
-                                </button>
                             </CardContent>
+
                         </Card>
                     ))}
                 </div>

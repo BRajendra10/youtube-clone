@@ -17,6 +17,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Badge, MoreVertical, Pencil, Trash } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+
+// import {
+//   DropdownMenu,
+//   DropdownMenuTrigger,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+// } from "@/components/ui/dropdown-menu";
+
 
 // Redux Actions
 import { fetchingUserChannel, toggleSubscribtion } from "../features/userSlice";
@@ -24,7 +34,7 @@ import { deleteVideo, fetchAllVideos } from "../features/videoSlice";
 import { updateUserProfile } from "../features/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { deletePlaylist, fetchUserPlaylists } from "../features/playlistSlice";
-import { ListVideo, MoreVertical } from "lucide-react";
+import { ListVideo } from "lucide-react";
 
 export function EditProfileModal({ open, onClose }) {
   const dispatch = useDispatch();
@@ -233,18 +243,15 @@ export default function UserChannel() {
     }
   };
 
-  const handleSubscribeToggle = async (channelId) => {
-    try {
-      await dispatch(toggleSubscribtion({ channelId })).unwrap();
+  const handleSubscribeToggle = (channelId) => {
 
-      toast.success(
-        userChannel.isSubscribed
-          ? "Unsubscribed successfully"
-          : "Subscribed successfully"
-      );
-    } catch (error) {
-      toast.error(error?.message || "Action failed");
-    }
+    dispatch(toggleSubscribtion(channelId))
+      .unwrap()
+      .then(() => toast.success(
+        userChannel.isSubscribed ?
+          "Unsubscribed successfully" :
+          "Subscribed successfully"))
+      .catch(() => toast.error("Subscribtion button failed !!"))
   };
 
   const handleDeletePlaylist = async (playlistId) => {
@@ -263,7 +270,7 @@ export default function UserChannel() {
 
       {/* COVER IMAGE */}
       <div className="w-full py-2 sm:py-4">
-        <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="overflow-hidden rounded-xl h-40 sm:h-52 md:h-60">
             <img
               src={userChannel.coverImage}
@@ -276,7 +283,7 @@ export default function UserChannel() {
 
       {/* HEADER */}
       <div className="w-full py-2 sm:py-4">
-        <div className="w-full max-w-6xl mx-auto flex items-center gap-4 sm:gap-6 px-3 sm:px-4 lg:px-8">
+        <div className="w-full max-w-7xl mx-auto flex items-center gap-4 sm:gap-6 px-3 sm:px-4 lg:px-8">
           <Avatar className="h-24 w-24 sm:h-32 sm:w-32 md:h-36 md:w-36 shadow-sm">
             <AvatarImage src={userChannel.avatar} alt="avatar" />
             <AvatarFallback className="text-xl">CH</AvatarFallback>
@@ -328,7 +335,7 @@ export default function UserChannel() {
       <div className="w-full pt-2 pb-10">
         <Tabs
           defaultValue="videos"
-          className="w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-8"
+          className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8"
         >
           {/* TAB BUTTONS */}
           <TabsList className="flex gap-3 bg-transparent p-0 mt-3">
@@ -361,39 +368,90 @@ export default function UserChannel() {
             )}
 
             {fetchStatus === "success" && videos.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 {videos.map((video) => (
-                  <div key={video._id} className="relative group space-y-2">
-                    {/* THUMBNAIL */}
+                  <div
+                    key={video._id}
+                    className="group cursor-pointer rounded-xl overflow-hidden hover:bg-neutral-700 transition-colors relative"
+                  >
+                    {/* CLICKABLE AREA */}
                     <Link to={`/video/${video._id}`}>
-                      <img
-                        src={video.thumbnail}
-                        alt={video.title}
-                        className="rounded-lg w-full h-36 object-cover"
-                      />
+                      {/* Thumbnail */}
+                      <AspectRatio ratio={18 / 9} className="relative w-full">
+                        <img
+                          src={video.thumbnail}
+                          alt={video.title}
+                          className="w-full h-full object-cover rounded-t-xl transform group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </AspectRatio>
+
+                      {/* Info */}
+                      <div className="flex p-3 gap-2">
+                        <Avatar>
+                          <AvatarImage src={video.owner?.avatar || ""} />
+                          <AvatarFallback>
+                            {video.owner?.name?.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        <div className="flex-1">
+                          <h2 className="text-sm font-medium line-clamp-2">
+                            {video.title}
+                          </h2>
+
+                          <p className="text-sm font-semibold text-gray-400 line-clamp-1">
+                            {video.owner?.username}
+                          </p>
+
+                          <p className="text-[11px] text-gray-500 mt-1">
+                            Uploaded{" "}
+                            {new Date(video.createdAt).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </p>
+                        </div>
+                      </div>
                     </Link>
 
-                    <h3 className="text-sm font-medium line-clamp-2">
-                      {video.title}
-                    </h3>
-
-                    {/* ACTION BUTTONS (ONLY OWNER) */}
+                    {/* OWNER MENU */}
                     {currentUser._id === userChannel._id && (
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition flex gap-2">
-                        <button
-                          onClick={() => navigate(`/edit/${video._id}`)}
-                          className="bg-black/60 px-2 py-1 text-xs rounded hover:bg-black/80"
-                        >
-                          Edit
-                        </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className="absolute bottom-11 right-1 p-2 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 transition hover:bg-black/80 z-20"
+                          >
+                            <MoreVertical size={18} className="text-white" />
+                          </button>
+                        </DropdownMenuTrigger>
 
-                        <button
-                          onClick={() => handleDelete(video._id)}
-                          className="bg-red-600 px-2 py-1 text-xs rounded hover:bg-red-700"
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-40 bg-[#1f1f1f] text-white border border-neutral-700"
                         >
-                          Delete
-                        </button>
-                      </div>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              navigate(`/edit/${video._id}`);
+                            }}
+                            className="flex items-center gap-2"
+                          >
+                            <Pencil className="h-4 w-4 text-neutral-300" />
+                            Edit
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(video._id);
+                            }}
+                            className="flex items-center gap-2 text-neutral-300"
+                          >
+                            <Trash className="h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     )}
                   </div>
                 ))}
@@ -420,7 +478,7 @@ export default function UserChannel() {
 
             {/* PLAYLIST GRID */}
             {fetchStatus === "success" && playlists.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 {playlists.map((item, index) => (
                   <div
                     key={index}
@@ -428,58 +486,60 @@ export default function UserChannel() {
                   >
                     {/* THUMBNAIL */}
                     <Link to={`/playlist/${item._id}/video/${item.videos[0]}`}>
-                      <div className="relative">
+                      <AspectRatio ratio={18 / 9} className="relative rounded-t-xl overflow-hidden">
                         <img
                           src={`https://picsum.photos/600/350?random=${index + 1}`}
-                          className="w-full h-36 rounded-t-xl object-cover"
+                          alt="Playlist thumbnail"
+                          className="w-full h-full object-cover"
                         />
 
                         {/* COUNT BADGE */}
-                        <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 text-xs flex items-center gap-1 rounded">
+                        <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur px-2 py-1 text-xs flex items-center gap-1 rounded-md">
                           <ListVideo size={14} />
                           {item.count} videos
                         </div>
-                      </div>
+                      </AspectRatio>
                     </Link>
 
                     {/* PLAYLIST NAME */}
-                    <div className="p-2">
+                    <div className="p-2 relative">
                       <h3 className="text-sm font-medium line-clamp-1">{item.name}</h3>
 
                       {item.updatedAt && (
                         <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-                          {item.updatedAt}
+                          {item.createdAt}
                         </p>
+                      )}
+
+                      {currentUser._id === userChannel._id && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="absolute top-2 right-2 p-2 rounded-full bg-black/60 hover:bg-black/80 opacity-0 group-hover:opacity-100 transition">
+                              <MoreVertical size={18} />
+                            </button>
+                          </DropdownMenuTrigger>
+
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-40 bg-[#1f1f1f] text-white border border-neutral-700"
+                          >
+                            <DropdownMenuItem>Edit Playlist</DropdownMenuItem>
+                            <DropdownMenuItem>Share</DropdownMenuItem>
+
+                            <DropdownMenuSeparator className="bg-neutral-700" />
+
+                            <DropdownMenuItem
+                              className="text-red-400"
+                              onClick={() => handleDeletePlaylist(item._id)}
+                            >
+                              Delete Playlist
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       )}
                     </div>
 
                     {/* OPTIONS ONLY FOR OWNER */}
-                    {currentUser._id === userChannel._id && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="absolute top-2 right-2 p-2 rounded-full bg-black/60 hover:bg-black/80 opacity-0 group-hover:opacity-100 transition">
-                            <MoreVertical size={18} />
-                          </button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent
-                          align="end"
-                          className="w-40 bg-[#1f1f1f] text-white border border-neutral-700"
-                        >
-                          <DropdownMenuItem>Edit Playlist</DropdownMenuItem>
-                          <DropdownMenuItem>Share</DropdownMenuItem>
-
-                          <DropdownMenuSeparator className="bg-neutral-700" />
-
-                          <DropdownMenuItem
-                            className="text-red-400"
-                            onClick={() => handleDeletePlaylist(item._id)}
-                          >
-                            Delete Playlist
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
                   </div>
                 ))}
               </div>

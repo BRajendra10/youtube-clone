@@ -51,7 +51,7 @@ export default function SaveToPlaylistDialog({
     useEffect(() => {
         dispatch(fetchUserPlaylists(currentUser._id))
             .unwrap()
-            .then(() => toast.success("Fetched user playlists successfully"))
+            // .then(() => toast.success("Fetched user playlists successfully"))
             .catch(() => toast.error("Failed to fetch user playlists !!"))
     }, [dispatch, currentUser]);
 
