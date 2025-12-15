@@ -70,14 +70,11 @@ export const deleteVideo = createAsyncThunk(
 
 const initialState = {
     videos: [],
-    selectedVideo: null,
-
+    selectedVideoId: null,
     fetchStatus: null,
     uploadStatus: null,
     updateStatus: null,
     deleteStatus: null,
-    reqStatus: null,
-
     error: null
 };
 

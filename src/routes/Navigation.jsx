@@ -9,9 +9,9 @@ import UserChannel from "../pages/UserChannel";
 import Subscriptions from "../pages/Subscriptions";
 import UploadVideo from "../components/UploadVideo";
 import HomePage from "../pages/Home";
-import SingleVideoPage from "../components/SingleVideoPage"; // new component
+import SingleVideoPage from "../pages/SingleVideoPage"; // new component
 import PlaylistPage from "../pages/Playlists";
-import SinglePlaylistPage from "../components/SinglePlaylistPage";
+import SinglePlaylistPage from "../pages/SinglePlaylistPage";
 
 export default function Navigation() {
   return (

@@ -1,145 +1,30 @@
+// React & Router
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
+// Redux
+import { useDispatch, useSelector } from "react-redux";
+import { fetchingUserChannel } from "../features/userSlice";
+import { fetchAllVideos } from "../features/videoSlice";
+import { fetchUserPlaylists } from "../features/playlistSlice";
 
 // UI Components
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 
-// Redux Actions
-import { fetchingUserChannel, toggleSubscribtion } from "../features/userSlice";
-import { deleteVideo, fetchAllVideos } from "../features/videoSlice";
-import { updateUserProfile } from "../features/userSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { deletePlaylist, fetchUserPlaylists } from "../features/playlistSlice";
-import { ListVideo, MoreVertical } from "lucide-react";
+// Utilities
+// import { toast } from "sonner";
 
-export function EditProfileModal({ open, onClose }) {
-  const dispatch = useDispatch();
-  const { currentUser } = useSelector((state) => state.user);
+// Local Components
+import Video from "../components/VideoCard";
+import PlaylistCard from "../components/PlaylistCard";
+import SaveToPlaylistDialog from "../components/SaveToPlaylistDialog";
+import { EditProfileModal } from "../components/EditProfileModal";
+import { EditPlaylistModal } from "../components/EditPlaylistModal";
+import SubscriptionButton from "../components/SubscriptionButton";
 
-  const [fullName, setFullName] = useState("");
-  const [avatar, setAvatar] = useState(null);
-  const [coverImage, setCoverImage] = useState(null);
-
-  const [avatarPreview, setAvatarPreview] = useState(null);
-  const [coverPreview, setCoverPreview] = useState(null);
-
-  // Prefill data when modal opens
-  useEffect(() => {
-    if (currentUser) {
-      setFullName(currentUser.fullName);
-      setAvatarPreview(currentUser.avatar);
-      setCoverPreview(currentUser.coverImage);
-    }
-  }, [currentUser]);
-
-  const handleSubmit = async () => {
-    const formData = new FormData();
-
-    formData.append("fullName", fullName);
-
-    if (avatar) formData.append("avatar", avatar);
-    if (coverImage) formData.append("coverImage", coverImage);
-
-    try {
-      const res = await dispatch(updateUserProfile(formData));
-
-      if (res.meta.requestStatus === "fulfilled") {
-        toast.success("Profile updated successfully!");
-        onClose();
-      } else {
-        toast.error(res.payload || "Failed to update profile");
-      }
-    } catch (error) {
-      toast.error("Something went wrong!");
-      console.log(error);
-    }
-  };
-
-
-  return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
-        </DialogHeader>
-
-        {/* COVER IMAGE */}
-        <div className="space-y-2">
-          <Label>Cover Image</Label>
-          <div className="w-full h-32 rounded-lg overflow-hidden bg-muted">
-            <img
-              src={coverPreview}
-              alt="cover preview"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files[0];
-              setCoverImage(file);
-              setCoverPreview(URL.createObjectURL(file));
-            }}
-          />
-        </div>
-
-        {/* AVATAR */}
-        <div className="space-y-2 mt-4">
-          <Label>Avatar</Label>
-          <div className="w-20 h-20 rounded-full overflow-hidden bg-muted">
-            <img
-              src={avatarPreview}
-              alt="avatar preview"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files[0];
-              setAvatar(file);
-              setAvatarPreview(URL.createObjectURL(file));
-            }}
-          />
-        </div>
-
-        {/* FULL NAME */}
-        <div className="space-y-2 mt-4">
-          <Label>Full Name</Label>
-          <Input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-          />
-        </div>
-
-        {/* BUTTONS */}
-        <div className="flex justify-end gap-3 mt-6">
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Save</Button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 function UserChannelSkeleton() {
   return (
@@ -192,14 +77,22 @@ function UserChannelSkeleton() {
 
 export default function UserChannel() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { username } = useParams();
+
+  // Dialog state
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Playlist modal
+  const [openModal, setOpenModal] = useState(false);
+  const [editPlaylist, setEditPlaylist] = useState(null);
+
+  // Profile modal
+  const [editOpen, setEditOpen] = useState(false);
 
   const { userChannel, currentUser } = useSelector((state) => state.user);
   const { videos, fetchStatus } = useSelector((state) => state.video);
   const { playlists } = useSelector((state) => state.playlist);
-
-  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchingUserChannel({ username }));
@@ -222,48 +115,16 @@ export default function UserChannel() {
     dispatch(fetchUserPlaylists(userChannel._id))
   }, [dispatch, userChannel]);
 
-  const handleDelete = async (videoId) => {
-    if (!confirm("Delete this video permanently?")) return;
-
-    try {
-      await dispatch(deleteVideo(videoId)).unwrap();
-      toast.success("Video deleted successfully!");
-    } catch (error) {
-      toast.error(error?.message || "Failed to delete video.");
-    }
-  };
-
-  const handleSubscribeToggle = async (channelId) => {
-    try {
-      await dispatch(toggleSubscribtion({ channelId })).unwrap();
-
-      toast.success(
-        userChannel.isSubscribed
-          ? "Unsubscribed successfully"
-          : "Subscribed successfully"
-      );
-    } catch (error) {
-      toast.error(error?.message || "Action failed");
-    }
-  };
-
-  const handleDeletePlaylist = async (playlistId) => {
-    await dispatch(deletePlaylist(playlistId))
-
-    console.log("playlist deleted successfully", playlistId)
-  }
-
   if (!userChannel || userChannel.username !== username) {
     return <UserChannelSkeleton />;
   }
 
   return (
     <div className="w-full flex flex-col">
-      <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} />
 
       {/* COVER IMAGE */}
       <div className="w-full py-2 sm:py-4">
-        <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="overflow-hidden rounded-xl h-40 sm:h-52 md:h-60">
             <img
               src={userChannel.coverImage}
@@ -276,7 +137,7 @@ export default function UserChannel() {
 
       {/* HEADER */}
       <div className="w-full py-2 sm:py-4">
-        <div className="w-full max-w-6xl mx-auto flex items-center gap-4 sm:gap-6 px-3 sm:px-4 lg:px-8">
+        <div className="w-full max-w-7xl mx-auto flex items-center gap-4 sm:gap-6 px-3 sm:px-4 lg:px-8">
           <Avatar className="h-24 w-24 sm:h-32 sm:w-32 md:h-36 md:w-36 shadow-sm">
             <AvatarImage src={userChannel.avatar} alt="avatar" />
             <AvatarFallback className="text-xl">CH</AvatarFallback>
@@ -309,16 +170,11 @@ export default function UserChannel() {
                 </Button>
               )}
 
-              {/* Subscribe Button */}
-              {username !== currentUser.username && (
-                <Button
-                  className="rounded-full px-6"
-                  variant={userChannel.isSubscribed ? "secondary" : "default"}
-                  onClick={() => handleSubscribeToggle(userChannel._id)}
-                >
-                  {userChannel.isSubscribed ? "Subscribed" : "Subscribe"}
-                </Button>
-              )}
+              <SubscriptionButton 
+                channelId={userChannel._id}
+                isSubscribed={userChannel.isSubscribed}
+              />
+
             </div>
           </div>
         </div>
@@ -328,7 +184,7 @@ export default function UserChannel() {
       <div className="w-full pt-2 pb-10">
         <Tabs
           defaultValue="videos"
-          className="w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-8"
+          className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8"
         >
           {/* TAB BUTTONS */}
           <TabsList className="flex gap-3 bg-transparent p-0 mt-3">
@@ -361,41 +217,17 @@ export default function UserChannel() {
             )}
 
             {fetchStatus === "success" && videos.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {videos.map((video) => (
-                  <div key={video._id} className="relative group space-y-2">
-                    {/* THUMBNAIL */}
-                    <Link to={`/video/${video._id}`}>
-                      <img
-                        src={video.thumbnail}
-                        alt={video.title}
-                        className="rounded-lg w-full h-36 object-cover"
-                      />
-                    </Link>
-
-                    <h3 className="text-sm font-medium line-clamp-2">
-                      {video.title}
-                    </h3>
-
-                    {/* ACTION BUTTONS (ONLY OWNER) */}
-                    {currentUser._id === userChannel._id && (
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition flex gap-2">
-                        <button
-                          onClick={() => navigate(`/edit/${video._id}`)}
-                          className="bg-black/60 px-2 py-1 text-xs rounded hover:bg-black/80"
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          onClick={() => handleDelete(video._id)}
-                          className="bg-red-600 px-2 py-1 text-xs rounded hover:bg-red-700"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                {videos.map((video, index) => (
+                  <Video
+                    key={index}
+                    id={video._id}
+                    data={video}
+                    onSave={() => {
+                      setSelectedVideo(video._id);
+                      setIsDialogOpen(true);
+                    }}
+                  />
                 ))}
               </div>
             )}
@@ -420,67 +252,16 @@ export default function UserChannel() {
 
             {/* PLAYLIST GRID */}
             {fetchStatus === "success" && playlists.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 {playlists.map((item, index) => (
-                  <div
-                    key={index}
-                    className="relative group rounded-xl bg-[#181818] hover:bg-[#202020] transition overflow-hidden"
-                  >
-                    {/* THUMBNAIL */}
-                    <Link to={`/playlist/${item._id}/video/${item.videos[0]}`}>
-                      <div className="relative">
-                        <img
-                          src={`https://picsum.photos/600/350?random=${index + 1}`}
-                          className="w-full h-36 rounded-t-xl object-cover"
-                        />
-
-                        {/* COUNT BADGE */}
-                        <div className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 text-xs flex items-center gap-1 rounded">
-                          <ListVideo size={14} />
-                          {item.count} videos
-                        </div>
-                      </div>
-                    </Link>
-
-                    {/* PLAYLIST NAME */}
-                    <div className="p-2">
-                      <h3 className="text-sm font-medium line-clamp-1">{item.name}</h3>
-
-                      {item.updatedAt && (
-                        <p className="text-xs text-gray-500 mt-1 line-clamp-1">
-                          {item.updatedAt}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* OPTIONS ONLY FOR OWNER */}
-                    {currentUser._id === userChannel._id && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button className="absolute top-2 right-2 p-2 rounded-full bg-black/60 hover:bg-black/80 opacity-0 group-hover:opacity-100 transition">
-                            <MoreVertical size={18} />
-                          </button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent
-                          align="end"
-                          className="w-40 bg-[#1f1f1f] text-white border border-neutral-700"
-                        >
-                          <DropdownMenuItem>Edit Playlist</DropdownMenuItem>
-                          <DropdownMenuItem>Share</DropdownMenuItem>
-
-                          <DropdownMenuSeparator className="bg-neutral-700" />
-
-                          <DropdownMenuItem
-                            className="text-red-400"
-                            onClick={() => handleDeletePlaylist(item._id)}
-                          >
-                            Delete Playlist
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </div>
+                  <PlaylistCard
+                    key={item._id || index}
+                    data={item}
+                    onSelect={(data) => {
+                      setOpenModal(true);
+                      setEditPlaylist(data);
+                    }}
+                  />
                 ))}
               </div>
             )}
@@ -488,6 +269,23 @@ export default function UserChannel() {
 
         </Tabs>
       </div>
+
+      <SaveToPlaylistDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        videoId={selectedVideo}
+      />
+
+      <EditPlaylistModal
+        open={openModal}
+        onClose={() => {
+          setOpenModal(false);
+          setEditPlaylist(null);
+        }}
+        initialData={editPlaylist || {}}
+      />
+
+      <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} />
     </div>
   );
 }

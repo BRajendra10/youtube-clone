@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Search, Plus, Bell, Settings, TvMinimalPlay, SquarePen, Menu } from 'lucide-react';
+import { Search, Plus, Bell, Settings, TvMinimalPlay, SquarePen, Menu, User, Users, LogOut, Repeat, } from 'lucide-react';
+
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -46,12 +47,10 @@ export default function Navbar() {
     const LogoutUser = () => {
         dispatch(Logout())
             .unwrap()
-            .then(() => toast.success("Video added to playlist successfully"))
-            .catch(() => {
-                toast.error("Failed to add video !!") 
-                navigate("/login")
-            })
-        
+            .then(() => toast.success("Logout successfully | login"))
+            .catch(() => toast.error("Failed to logout !!"))
+
+        navigate("/login")
     }
 
     return (
@@ -86,38 +85,28 @@ export default function Navbar() {
 
             {/* Right Section (create video or post / notification / Profile) */}
             <div className="flex items-center gap-4">
-                {/* Example: upload / notifications / profile */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center justify-between gap-3 p-2 px-3 rounded-full bg-popover hover:bg-muted cursor-pointer">
-                        <Plus className="w-5 h-5" /> Create
-                    </DropdownMenuTrigger>
 
-                    <DropdownMenuContent className="relative left-8 w-40 dark bg-muted">
-                        <DropdownMenuItem className="flex items-center gap-3" onClick={() => navigate("/upload-video")}> <TvMinimalPlay className="w-6 h-6" /> Upload video</DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center gap-3"> <SquarePen /> Create a post</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-
-                <Popover className="hidden">
+                <Popover>
                     <PopoverTrigger asChild>
-                        <button className="md:hidden p-2 rounded-full hover:bg-muted transition">
-                            <Search className="w-5 h-5" />
+                        <button className="flex items-center justify-between gap-3 p-2 px-3 rounded-full bg-popover hover:bg-muted cursor-pointer">
+                            <Plus className="w-5 h-5" /> Create
                         </button>
                     </PopoverTrigger>
 
-                    <PopoverContent className="relative right-18 w-100 dark p-2 rounded-lg shadow-lg bg-background border">
-
-                        <div className="flex items-center w-full relative">
-                            <input
-                                type="text"
-                                placeholder="Search"
-                                className="w-full h-10 border rounded-l-full px-4 outline-none"
-                            />
-
+                    <PopoverContent
+                        align="end"
+                        className="dark w-40 p-0 shadow-xl bg-background border"
+                    >
+                        <div className="py-1">
                             <button
-                                className="h-10 w-12 border border-l-0 rounded-r-full flex items-center justify-center"
+                                className="w-full flex gap-3 px-4 py-2 text-sm hover:bg-muted"
+                                onClick={() => navigate("/upload-video")}
                             >
-                                <Search size={20} />
+                                <TvMinimalPlay className="w-5 h-5" /> Upload video
+                            </button>
+
+                            <button className="w-full flex gap-3 px-4 py-2 text-sm hover:bg-muted">
+                                <SquarePen className="w-5 h-5" /> Create a post
                             </button>
                         </div>
                     </PopoverContent>
@@ -201,7 +190,6 @@ export default function Navbar() {
                     </PopoverContent>
                 </Popover>
 
-
                 <Popover>
                     <PopoverTrigger asChild>
                         <button className="w-9 h-9 rounded-full overflow-hidden">
@@ -226,11 +214,7 @@ export default function Navbar() {
 
                             <div>
                                 <h3 className="font-semibold text-base">{currentUser?.fullName}</h3>
-                                <p className="text-sm text-muted-foreground">{currentUser?.email}</p>
-
-                                <button className="text-primary text-sm font-medium mt-1 hover:underline">
-                                    Manage your account
-                                </button>
+                                <p className="text-sm text-muted-foreground">{currentUser?.username}</p>
                             </div>
                         </div>
 
@@ -238,50 +222,42 @@ export default function Navbar() {
 
                         {/* Menu Items */}
                         <div className="py-1">
-                            <button
-                                className="w-full text-left px-4 py-2 text-sm hover:bg-muted"
-                                onClick={() => getUserChannel(currentUser.username)}
-                            >
-                                Your channel
-                            </button>
+                            <div className="py-1">
+                                <button
+                                    className="group w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-muted"
+                                    onClick={() => getUserChannel(currentUser.username)}
+                                >
+                                    <User className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                                    <span>Your channel</span>
+                                </button>
 
-                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
-                                YouTube Studio
-                            </button>
-
-                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
-                                Switch account
-                            </button>
-
-                            <button
-                                className="w-full text-left px-4 py-2 text-sm hover:bg-muted"
-                                onClick={() => LogoutUser()}
-                            >
-                                Sign out
-                            </button>
+                                <button className="group w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-muted">
+                                    <Repeat className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                                    <span>Switch account</span>
+                                </button>
+                            </div>
                         </div>
 
                         <div className="h-px bg-border"></div>
 
                         {/* Bottom settings section */}
                         <div className="py-1">
-                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
-                                Appearance
+                            <button
+                                className="group w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-muted"
+                                onClick={LogoutUser}
+                            >
+                                <LogOut className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                                <span>Sign out</span>
                             </button>
 
-                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
-                                Language
-                            </button>
-
-                            <button className="w-full text-left px-4 py-2 text-sm hover:bg-muted">
-                                Keyboard shortcuts
+                            <button className="group w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-muted">
+                                <Settings className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                                <span>Manage your account</span>
                             </button>
                         </div>
                     </PopoverContent>
                 </Popover>
-
             </div>
-
         </nav>
     );
 }

@@ -40,7 +40,7 @@ export default function VideoForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white p-6">
+    <div className="min-h-screen text-white p-6">
       <div className="max-w-5xl mx-auto space-y-6">
 
         <h1 className="text-3xl font-bold">

@@ -16,7 +16,8 @@ export const getSubscribedTo = createAsyncThunk(
 
 const initialState = {
     subscribers: null,
-    reqStatus: false,
+    fetchStatus: false,
+    error: null
 }
 
 const subscriptionSlice = createSlice({
@@ -25,14 +26,15 @@ const subscriptionSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getSubscribedTo.pending, (state) => {
-                state.reqStatus = "Pending";
+                state.fetchStatus = "pending";
             })
             .addCase(getSubscribedTo.fulfilled, (state, action) => {
-                state.reqStatus = true;
+                state.fetchStatus = "success";
                 state.subscribers = action.payload;
             })
-            .addCase(getSubscribedTo.rejected, (state) => {
-                state.reqStatus = "Error";
+            .addCase(getSubscribedTo.rejected, (state, action) => {
+                state.fetchStatus = "error";
+                state.error = action.payload;
             })
     }
 })

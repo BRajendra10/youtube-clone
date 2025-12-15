@@ -10,13 +10,15 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
+import { toggleSubscribtion } from "../features/userSlice.js";
+import SubscriptionButton from "../components/SubscriptionButton.jsx";
 
 export default function SingleVideoPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { videoId, playlistId } = useParams();
 
-    const { selectedVideo, reqStatus } = useSelector(state => state.video);
+    const { videos, selectedVideo, reqStatus } = useSelector(state => state.video);
     const { selectedPlaylist, loading: playlistLoading } = useSelector(state => state.playlist);
 
     // Playlist Videos
@@ -37,6 +39,13 @@ export default function SingleVideoPage() {
         window.scrollTo(0, 0);
     }, [dispatch, videoId, playlistId]);
 
+    const handleSubscribeToggle = (channelId) => {
+        dispatch(toggleSubscribtion(channelId))
+            .unwrap()
+            .then(() => toast.success("toggle subscrbtion successfully"))
+            .catch(() => toast.error("Subscribtion button failed !!"))
+    };
+
     // Show loading skeleton
     if (reqStatus === "pending" || (playlistId && playlistLoading)) {
         return (
@@ -49,7 +58,6 @@ export default function SingleVideoPage() {
     }
 
     if (!selectedVideo) {
-        toast.error("Video not found!");
         return null;
     }
 
@@ -61,18 +69,20 @@ export default function SingleVideoPage() {
         { id: 3, name: "Michael", text: "Subscribed! Waiting for more content.", time: "1 week ago" }
     ];
 
-    const sidebarVideos = playlistId ? playlistVideos : [];
+    const sidebarVideos = playlistId ? playlistVideos : videos;
 
     return (
-        <div className="min-h-screen w-full bg-neutral-900 text-white p-6 flex flex-col lg:flex-row gap-8">
+        <div className="min-h-screen w-full text-white p-6 flex flex-col lg:flex-row gap-8">
 
             {/* LEFT SIDE */}
-            <div className="flex-1 flex flex-col gap-6">
+            <div className="flex-1 flex flex-col gap-5">
 
                 {/* PLAYER */}
-                <AspectRatio ratio={16 / 9} className="rounded-2xl overflow-hidden border border-neutral-800 shadow-xl">
+                <AspectRatio ratio={16 / 9} className="rounded-2xl overflow-hidden shadow-xl">
                     <video
                         src={video.videoFile}
+                        autoPlay
+                        playsInline
                         controls
                         className="w-full h-full bg-black"
                         onError={() => toast.error("Video failed to play")}
@@ -80,10 +90,10 @@ export default function SingleVideoPage() {
                 </AspectRatio>
 
                 {/* TITLE */}
-                <h1 className="text-2xl font-bold leading-snug">{video.title}</h1>
+                <h1 className="text-xl font-bold leading-snug">{video.title}</h1>
 
                 {/* CHANNEL HEADER */}
-                <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
+                <div className="flex items-center justify-between pb-2">
 
                     <div className="flex items-center gap-5">
                         <Link to={`/${video.owner?.username}`} className="flex items-center gap-3">
@@ -94,13 +104,13 @@ export default function SingleVideoPage() {
 
                             <div>
                                 <p className="font-semibold text-lg">{video.owner?.username}</p>
-                                <p className="text-xs text-gray-400">{video.owner.email}</p>
+                                <p className="text-xs text-gray-400">{video.owner.fullName}</p>
                             </div>
                         </Link>
 
                         <Button
                             className="bg-white text-black hover:bg-gray-200 px-6 py-2 rounded-full font-semibold"
-                            onClick={() => toast.success("Subscribed 🎉")}
+                            onClick={() => handleSubscribeToggle(selectedVideo?.owner?._id)}
                         >
                             Subscribe
                         </Button>
@@ -185,9 +195,8 @@ export default function SingleVideoPage() {
                 {sidebarVideos?.map(item => (
                     <div
                         key={item._id}
-                        className={`flex gap-3 p-2 rounded-lg cursor-pointer hover:bg-neutral-800/60 hover:scale-[1.01] transition ${
-                            item._id === video._id ? "bg-neutral-800" : ""
-                        }`}
+                        className={`flex gap-3 p-2 rounded-lg cursor-pointer hover:bg-neutral-800/60 hover:scale-[1.01] transition ${item._id === video._id ? "bg-neutral-800" : ""
+                            }`}
                         onClick={() => {
                             toast.success(`Playing: ${item.title}`);
                             navigate(`/video/${item._id}/${playlistId ? playlistId : ""}`);
