@@ -91,7 +91,7 @@ const initialState = {
     currentUser: null,
     userChannel: null,
     accessToken: null,
-    reqStatus: null,
+    fetchStatus: null,
 };
 
 const userSlice = createSlice({
@@ -102,50 +102,50 @@ const userSlice = createSlice({
 
             // LOGIN
             .addCase(LoginUser.pending, (state) => {
-                state.reqStatus = "pending";
+                state.fetchStatus = "pending";
             })
             .addCase(LoginUser.fulfilled, (state, action) => {
-                state.reqStatus = "success";
+                state.fetchStatus = "success";
                 state.currentUser = action.payload.user;
                 state.accessToken = action.payload.accessToken;
             })
             .addCase(LoginUser.rejected, (state) => {
-                state.reqStatus = "error";
+                state.fetchStatus = "error";
             })
 
 
             // REGISTER
             .addCase(RegisterUser.pending, (state) => {
-                state.reqStatus = "pending";
+                state.fetchStatus = "pending";
             })
             .addCase(RegisterUser.fulfilled, (state, action) => {
                 state.currentUser = action.payload;
-                state.reqStatus = "success";
+                state.fetchStatus = "success";
             })
             .addCase(RegisterUser.rejected, (state) => {
-                state.reqStatus = "error";
+                state.fetchStatus = "error";
             })
 
 
             // FETCH CHANNEL
             .addCase(fetchingUserChannel.pending, (state) => {
-                state.reqStatus = "pending";
+                state.fetchStatus = "pending";
             })
             .addCase(fetchingUserChannel.fulfilled, (state, action) => {
-                state.reqStatus = "success";
+                state.fetchStatus = "success";
                 state.userChannel = action.payload;
             })
             .addCase(fetchingUserChannel.rejected, (state) => {
-                state.reqStatus = "error";
+                state.fetchStatus = "error";
             })
 
 
             // TOGGLE SUBSCRIPTION
             .addCase(toggleSubscribtion.pending, (state) => {
-                state.reqStatus = "pending";
+                state.fetchStatus = "pending";
             })
             .addCase(toggleSubscribtion.fulfilled, (state, action) => {
-                state.reqStatus = "success";
+                state.fetchStatus = "success";
 
                 if (state.userChannel) {
                     state.userChannel.isSubscribed = action.payload.isSubscribed;
@@ -153,34 +153,34 @@ const userSlice = createSlice({
                 }
             })
             .addCase(toggleSubscribtion.rejected, (state) => {
-                state.reqStatus = "error";
+                state.fetchStatus = "error";
             })
 
 
             // LOGOUT
             .addCase(Logout.pending, (state) => {
-                state.reqStatus = "pending";
+                state.fetchStatus = "pending";
             })
             .addCase(Logout.fulfilled, (state) => {
-                state.reqStatus = "success";
+                state.fetchStatus = "success";
                 state.currentUser = null;
                 state.userChannel = null;
             })
             .addCase(Logout.rejected, (state) => {
-                state.reqStatus = "error";
+                state.fetchStatus = "error";
             })
 
 
             // UPDATE PROFILE
             .addCase(updateUserProfile.pending, (state) => {
-                state.reqStatus = "pending";
+                state.fetchStatus = "pending";
             })
             .addCase(updateUserProfile.fulfilled, (state, action) => {
                 state.currentUser = action.payload;
-                state.reqStatus = "success";
+                state.fetchStatus = "success";
             })
             .addCase(updateUserProfile.rejected, (state) => {
-                state.reqStatus = "error";
+                state.fetchStatus = "error";
             });
     },
 });

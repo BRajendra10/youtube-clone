@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
 import { toggleSubscribtion } from "../features/userSlice.js";
+import SubscriptionButton from "../components/SubscriptionButton.jsx";
 
 export default function SingleVideoPage() {
     const dispatch = useDispatch();

@@ -99,6 +99,7 @@ const playlistSlice = createSlice({
     initialState: {
         playlists: [],
         selectedPlaylist: null,
+        fetchStatus: null,
         loading: false,
         error: null,
     },
@@ -108,96 +109,98 @@ const playlistSlice = createSlice({
 
             // Create
             .addCase(createPlaylist.pending, (state) => {
-                state.loading = true;
+                state.fetchStatus = "pending"
             })
             .addCase(createPlaylist.fulfilled, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "success"
                 state.playlists.push(action.payload);
             })
             .addCase(createPlaylist.rejected, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "error"
                 state.error = action.payload;
             })
 
             // Fetch User Playlists
             .addCase(fetchUserPlaylists.pending, (state) => {
-                state.loading = true;
+                state.fetchStatus = "pending"
             })
             .addCase(fetchUserPlaylists.fulfilled, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "success"
                 state.playlists = action.payload;
             })
             .addCase(fetchUserPlaylists.rejected, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "error"
                 state.error = action.payload;
             })
 
             // Fetch Playlist By ID
             .addCase(fetchPlaylistById.pending, (state) => {
-                state.loading = true;
+                state.fetchStatus = "pending"
             })
             .addCase(fetchPlaylistById.fulfilled, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "success"
                 state.selectedPlaylist = action.payload;
             })
             .addCase(fetchPlaylistById.rejected, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "error"
                 state.error = action.payload;
             })
 
             // Add Video
             .addCase(addVideoToPlaylist.pending, (state) => {
-                state.loading = true;
+                state.fetchStatus = "pending"
             })
             .addCase(addVideoToPlaylist.fulfilled, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "success"
                 console.log(action.payload);
             })
             .addCase(addVideoToPlaylist.rejected, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "error"
                 state.error = action.payload
             })
 
             // Remove Video
             .addCase(removeVideoFromPlaylist.pending, (state) => {
-                state.loading = true;
+                state.fetchStatus = "pending"
             })
             .addCase(removeVideoFromPlaylist.fulfilled, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "success"
                 console.log(action.payload);
             })
             .addCase(removeVideoFromPlaylist.rejected, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "error"
                 state.error = action.payload
             })
 
             // Update Playlist
             .addCase(updatePlaylist.pending, (state) => {
-                state.loading = true;
+                state.fetchStatus = "pending"
             })
             .addCase(updatePlaylist.fulfilled, (state, action) => {
+                state.fetchStatus = "success"
                 state.selectedPlaylist = action.payload;
                 state.playlists = state.playlists.map((p) =>
                     p._id === action.payload._id ? action.payload : p
                 );
             })
             .addCase(updatePlaylist.rejected, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "error"
                 state.error = action.payload
             })
 
             // Delete Playlist
             .addCase(deletePlaylist.pending, (state) => {
-                state.loading = true;
+                state.fetchStatus = "pending"
             })
             .addCase(deletePlaylist.fulfilled, (state, action) => {
+                state.fetchStatus = "success"
                 state.playlists = state.playlists.filter(
                     (p) => p._id !== action.payload
                 );
             })
             .addCase(deletePlaylist.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload
+                state.fetchStatus = "error"
+                state.error = action.payload;
             })
     },
 });
