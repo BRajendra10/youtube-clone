@@ -72,6 +72,11 @@ export default function AppSidebar() {
                   path: "/"
                 },
                 {
+                  icon: <ListVideo className="w-5 h-5" />,
+                  label: "Posts",
+                  path: "/posts"
+                },
+                {
                   icon: <TvMinimalPlay className="w-5 h-5" />,
                   label: "Subscriptions",
                   path: "/Subscriptions"

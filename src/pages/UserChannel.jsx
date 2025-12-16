@@ -24,7 +24,7 @@ import SaveToPlaylistDialog from "../components/SaveToPlaylistDialog";
 import { EditProfileModal } from "../components/EditProfileModal";
 import { EditPlaylistModal } from "../components/EditPlaylistModal";
 import SubscriptionButton from "../components/SubscriptionButton";
-
+import PostTab from "../components/PostTab";
 
 function UserChannelSkeleton() {
   return (
@@ -170,7 +170,7 @@ export default function UserChannel() {
                 </Button>
               )}
 
-              <SubscriptionButton 
+              <SubscriptionButton
                 channelId={userChannel._id}
                 isSubscribed={userChannel.isSubscribed}
               />
@@ -233,10 +233,11 @@ export default function UserChannel() {
             )}
           </TabsContent>
 
-          {/* ==================== POSTS TAB ==================== */}
-          <TabsContent value="posts" className="py-8">
-            <p className="text-sm text-muted-foreground">No posts available.</p>
-          </TabsContent>
+          {/* ==================== POSTS TAB COMPONENT ==================== */}
+          <PostTab
+            username={username}
+            userChannel={userChannel} 
+          />
 
           {/* ==================== ABOUT TAB ==================== */}
           <TabsContent value="playlists" className="py-8">

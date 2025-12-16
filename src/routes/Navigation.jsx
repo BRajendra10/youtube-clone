@@ -12,6 +12,7 @@ import HomePage from "../pages/Home";
 import SingleVideoPage from "../pages/SingleVideoPage"; // new component
 import PlaylistPage from "../pages/Playlists";
 import SinglePlaylistPage from "../pages/SinglePlaylistPage";
+import PostsPage from "../pages/PostsPage";
 
 export default function Navigation() {
   return (
@@ -37,6 +38,7 @@ export default function Navigation() {
         <Route path="/playlists" element={<PlaylistPage />} />
         <Route path="/playlist/:playlistId/video/:videoId" element={<SingleVideoPage />} />
         <Route path="/my-playlist/:playlistId" element={<SinglePlaylistPage />} />
+        <Route path="/posts" element={<PostsPage />} />
 
         {/* Single Video Route */}
         <Route path="/video/:videoId" element={<SingleVideoPage />} />

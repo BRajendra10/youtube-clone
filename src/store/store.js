@@ -3,6 +3,7 @@ import userReducer from "../features/userSlice.js";
 import subscriptionReducer from "../features/subscriptionSlice.js";
 import videoReducers from '../features/videoSlice.js'
 import playlistReducers from '../features/playlistSlice.js';
+import postReducers from '../features/postSlice.js';
 
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   subscription: subscriptionReducer,
   video: videoReducers,
   playlist: playlistReducers,
+  post: postReducers
 });
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
