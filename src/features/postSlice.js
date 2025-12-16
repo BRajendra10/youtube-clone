@@ -14,6 +14,19 @@ export const createPost = createAsyncThunk(
     }
 );
 
+// GET ALL POSTS (HOME FEED)
+export const getAllPosts = createAsyncThunk(
+    "posts/getAllPosts",
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await api.get("/posts");
+            return res.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message);
+        }
+    }
+);
+
 // GET USER POSTS
 export const getUserPosts = createAsyncThunk(
     "posts/getUserPosts",
@@ -89,6 +102,20 @@ const postSlice = createSlice({
                 state.fetchStatus = "error"
                 state.error = action.payload;
             })
+
+            // GET ALL POSTS (HOME FEED)
+            .addCase(getAllPosts.pending, (state) => {
+                state.fetchStatus = "loading";
+            })
+            .addCase(getAllPosts.fulfilled, (state, action) => {
+                state.fetchStatus = "success";
+                state.posts = action.payload;
+            })
+            .addCase(getAllPosts.rejected, (state, action) => {
+                state.fetchStatus = "error";
+                state.error = action.payload;
+            })
+
 
             // UPDATE
             .addCase(updatePost.fulfilled, (state, action) => {
