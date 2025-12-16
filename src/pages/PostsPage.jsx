@@ -12,7 +12,8 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
-import { Heart, MoreVertical, Pencil, Share2, Trash } from "lucide-react";
+import { Heart, MoreVertical, Pencil, Share2, ThumbsUp, Trash } from "lucide-react";
+import { togglePostLike } from "../features/likeSlice";
 
 export default function PostsPage() {
     const dispatch = useDispatch();
@@ -55,6 +56,15 @@ export default function PostsPage() {
             toast.error("Failed to delete post");
         }
     };
+
+    const handlePostLike = async (postId) => {
+        try{
+            await dispatch(togglePostLike(postId)).unwrap();
+            toast.success("Toggle post like successfully")
+        } catch (error) {
+            toast.error(error?.message || "Failed to toggle post like !!")
+        }
+    }
 
     return (
         <div className="max-w-2xl mx-auto py-10 space-y-6">
@@ -119,9 +129,21 @@ export default function PostsPage() {
 
                                     {/* ACTIONS */}
                                     <div className="flex items-center gap-4 mt-3 text-stone-400">
-                                        <button className="flex items-center gap-1 hover:text-red-400 transition">
-                                            <Heart size={18} />
-                                            <span className="text-xs">0</span>
+                                        <button
+                                            onClick={() => handlePostLike(post?._id)}
+                                            className={`flex items-center gap-1 transition-colors
+                                                ${post.isLiked ? "text-white" : "text-gray-300 hover:text-white"}
+                                            `}
+                                        >
+                                            <Heart
+                                                className={`h-4 w-4 transition-transform
+                                                    ${post.isLiked ? "fill-white scale-105" : ""}
+                                                    `}
+                                            />
+
+                                            <span className="text-sm select-none">
+                                                {post.likesCount}
+                                            </span>
                                         </button>
                                     </div>
 

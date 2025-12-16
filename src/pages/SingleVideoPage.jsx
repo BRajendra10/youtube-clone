@@ -12,6 +12,7 @@ import { Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
 import { toggleSubscribtion } from "../features/userSlice.js";
 import SubscriptionButton from "../components/SubscriptionButton.jsx";
+import { toggleVideoLike } from "../features/likeSlice.js";
 
 export default function SingleVideoPage() {
     const dispatch = useDispatch();
@@ -46,6 +47,15 @@ export default function SingleVideoPage() {
             .catch(() => toast.error("Subscribtion button failed !!"))
     };
 
+    const handleVideoLike = () => {
+        try {
+            dispatch(toggleVideoLike(videoId)).unwrap();
+            toast.success("Toggle like successfully")
+        } catch (error) {
+            toast.error(error.message || "Failed to toggle like !!")
+        }
+    }
+
     // Show loading skeleton
     if (reqStatus === "pending" || (playlistId && playlistLoading)) {
         return (
@@ -70,6 +80,7 @@ export default function SingleVideoPage() {
     ];
 
     const sidebarVideos = playlistId ? playlistVideos : videos;
+    console.log(video)
 
     return (
         <div className="min-h-screen w-full text-white p-6 flex flex-col lg:flex-row gap-8">
@@ -119,10 +130,21 @@ export default function SingleVideoPage() {
                     {/* LIKE / DISLIKE / SHARE */}
                     <div className="flex items-center gap-3 bg-neutral-800 px-5 py-2 rounded-full w-fit shadow-md">
 
-                        <button className="flex items-center gap-1 text-gray-300 hover:text-white"
-                            onClick={() => toast.success("You liked the video 👍")}
+                        <button
+                            onClick={handleVideoLike}
+                            className={`flex items-center gap-1 transition-colors
+                                ${video?.isLiked ? "text-white" : "text-gray-300 hover:text-white"}
+                            `}
                         >
-                            <ThumbsUp className="h-5 w-5" />
+                            <ThumbsUp
+                                className={`h-5 w-5 transition-transform
+                                    ${video?.isLiked ? "fill-white scale-105" : ""}
+                                    `}
+                            />
+
+                            <span className="text-sm select-none">
+                                {video?.likesCount}
+                            </span>
                         </button>
 
                         <div className="w-px h-5 bg-neutral-700"></div>
