@@ -21,10 +21,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Video from "../components/VideoCard";
 import PlaylistCard from "../components/PlaylistCard";
 import SaveToPlaylistDialog from "../components/SaveToPlaylistDialog";
+import SubscriptionButton from "../components/SubscriptionButton";
+import PostCard from "../components/PostCard";
+import CreatePostBox from "../components/CreatePostBox";
+
 import { EditProfileModal } from "../components/EditProfileModal";
 import { EditPlaylistModal } from "../components/EditPlaylistModal";
-import SubscriptionButton from "../components/SubscriptionButton";
-import PostTab from "../components/PostTab";
+import { getUserPosts } from "../features/postSlice";
 
 function UserChannelSkeleton() {
   return (
@@ -93,6 +96,7 @@ export default function UserChannel() {
   const { userChannel, currentUser } = useSelector((state) => state.user);
   const { videos, fetchStatus } = useSelector((state) => state.video);
   const { playlists } = useSelector((state) => state.playlist);
+  const { posts } = useSelector((state) => state.post);
 
   useEffect(() => {
     dispatch(fetchingUserChannel({ username }));
@@ -113,6 +117,7 @@ export default function UserChannel() {
     );
 
     dispatch(fetchUserPlaylists(userChannel._id))
+    dispatch(getUserPosts({ userId: userChannel._id }))
   }, [dispatch, userChannel]);
 
   if (!userChannel || userChannel.username !== username) {
@@ -234,10 +239,32 @@ export default function UserChannel() {
           </TabsContent>
 
           {/* ==================== POSTS TAB COMPONENT ==================== */}
-          <PostTab
-            username={username}
-            userChannel={userChannel} 
-          />
+
+          <TabsContent value="posts" className="py-8 space-y-6">
+            {username === currentUser.username && <CreatePostBox />}
+
+            {fetchStatus === "loading" && (
+              <p className="text-sm text-muted-foreground">Loading posts...</p>
+            )}
+
+            {fetchStatus === "success" && posts.length === 0 && (
+              <p className="text-sm text-muted-foreground">No posts yet.</p>
+            )}
+
+            {fetchStatus === "success" && posts.length > 0 && (
+              <div className="max-w-2xl space-y-4">
+                {posts.map((post) => (
+                  <PostCard
+                    
+                    key={post._id}
+                    post={post}
+                    isOwner={post.user?._id === currentUser?._id}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
 
           {/* ==================== ABOUT TAB ==================== */}
           <TabsContent value="playlists" className="py-8">

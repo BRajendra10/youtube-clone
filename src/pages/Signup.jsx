@@ -58,12 +58,14 @@ export default function Signup() {
       formData.append("avatar", values.avatar);
       formData.append("coverImage", values.coverImage);
 
-      dispatch(RegisterUser(formData))
-        .unwrap()
-        .then(() => toast.success("User registered successfully"))
-        .catch(() => toast.error("Failed to register successfully !!"))
+      try {
+        await dispatch(RegisterUser(formData)).unwrap();
 
-      navigate("/")
+        toast.success("User registered successfully");
+        navigate("/");
+      } catch (error) {
+        toast.error(error?.message || "Failed to register user !!")
+      }
     },
   });
 

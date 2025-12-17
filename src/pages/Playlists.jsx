@@ -34,21 +34,21 @@ export default function PlaylistsPage() {
                 <h1 className="text-3xl font-bold">Playlists</h1>
             </div>
 
-            {/* 🔄 Loading */}
+            {/* Loading */}
             {isLoading && (
                 <div className="flex mt-20 text-neutral-400">
                     Loading playlists...
                 </div>
             )}
 
-            {/* ❌ Error */}
+            {/* Error */}
             {isError && (
                 <div className="flex mt-20 text-red-400">
                     Failed to load playlists
                 </div>
             )}
 
-            {/* ✅ Success */}
+            {/* Success */}
             {isSuccess && playlists?.length > 0 && (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-4">
                     {playlists.map((playlist, index) => (
@@ -64,7 +64,7 @@ export default function PlaylistsPage() {
                 </div>
             )}
 
-            {/* 📭 Empty State */}
+            {/* Empty State */}
             {isSuccess && playlists?.length === 0 && (
                 <div className="flex justify-center mt-20 text-neutral-400">
                     You haven’t created any playlists yet.

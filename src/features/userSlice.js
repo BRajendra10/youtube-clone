@@ -14,7 +14,6 @@ export const RegisterUser = createAsyncThunk(
     }
 );
 
-
 // LOGIN
 export const LoginUser = createAsyncThunk(
     "user/login",
@@ -27,7 +26,6 @@ export const LoginUser = createAsyncThunk(
         }
     }
 );
-
 
 // LOGOUT
 export const Logout = createAsyncThunk(
@@ -42,7 +40,6 @@ export const Logout = createAsyncThunk(
     }
 );
 
-
 // FETCH USER CHANNEL
 export const fetchingUserChannel = createAsyncThunk(
     "user/channel",
@@ -55,7 +52,6 @@ export const fetchingUserChannel = createAsyncThunk(
         }
     }
 );
-
 
 // UPDATE PROFILE
 export const updateUserProfile = createAsyncThunk(
@@ -70,11 +66,10 @@ export const updateUserProfile = createAsyncThunk(
     }
 );
 
-
 // TOGGLE SUBSCRIPTION
 export const toggleSubscribtion = createAsyncThunk(
     "user/toggle/subscribtion",
-    async ( channelId , { rejectWithValue }) => {
+    async (channelId, { rejectWithValue }) => {
         try {
             const res = await api.post(`/subscriptions/c/${channelId}`);
             return res.data;
@@ -84,14 +79,42 @@ export const toggleSubscribtion = createAsyncThunk(
     }
 );
 
+// ADD VIDEO TO WATCH HISTORY
+export const addVideoToWatchHistory = createAsyncThunk(
+    "user/addVideoToWatchHistory",
+    async (videoId, { rejectWithValue }) => {
+        try {
+            const res = await api.post(`/users/add-to-history/${videoId}`);
+            return res.data.data; // watchHistory array
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to add video to watch history"
+            );
+        }
+    }
+);
 
+// FETCH WATCH HISTORY
+export const fetchWatchHistory = createAsyncThunk(
+    "user/fetchWatchHistory",
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await api.get("/users/history");
+            return res.data.data; // watchHistory array
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to fetch watch history"
+            );
+        }
+    }
+);
 
-// SLICE
 const initialState = {
     currentUser: null,
     userChannel: null,
-    accessToken: null,
+    watchHistory: null,
     fetchStatus: null,
+    error: null,
 };
 
 const userSlice = createSlice({
@@ -100,21 +123,20 @@ const userSlice = createSlice({
     extraReducers: (builder) => {
         builder
 
-            // LOGIN
+            // LOGIN USER
             .addCase(LoginUser.pending, (state) => {
                 state.fetchStatus = "pending";
             })
             .addCase(LoginUser.fulfilled, (state, action) => {
                 state.fetchStatus = "success";
                 state.currentUser = action.payload.user;
-                state.accessToken = action.payload.accessToken;
             })
-            .addCase(LoginUser.rejected, (state) => {
+            .addCase(LoginUser.rejected, (state, action) => {
                 state.fetchStatus = "error";
+                state.error = action.payload;
             })
 
-
-            // REGISTER
+            // REGISTER USER
             .addCase(RegisterUser.pending, (state) => {
                 state.fetchStatus = "pending";
             })
@@ -122,12 +144,12 @@ const userSlice = createSlice({
                 state.currentUser = action.payload;
                 state.fetchStatus = "success";
             })
-            .addCase(RegisterUser.rejected, (state) => {
+            .addCase(RegisterUser.rejected, (state, action) => {
                 state.fetchStatus = "error";
+                state.error = action.payload;
             })
 
-
-            // FETCH CHANNEL
+            // FETCH USER CHANNEL
             .addCase(fetchingUserChannel.pending, (state) => {
                 state.fetchStatus = "pending";
             })
@@ -135,10 +157,10 @@ const userSlice = createSlice({
                 state.fetchStatus = "success";
                 state.userChannel = action.payload;
             })
-            .addCase(fetchingUserChannel.rejected, (state) => {
+            .addCase(fetchingUserChannel.rejected, (state, action) => {
                 state.fetchStatus = "error";
+                state.error = action.payload;
             })
-
 
             // TOGGLE SUBSCRIPTION
             .addCase(toggleSubscribtion.pending, (state) => {
@@ -152,10 +174,10 @@ const userSlice = createSlice({
                     state.userChannel.subscribersCount = action.payload.subscribersCount;
                 }
             })
-            .addCase(toggleSubscribtion.rejected, (state) => {
+            .addCase(toggleSubscribtion.rejected, (state, action) => {
                 state.fetchStatus = "error";
+                state.error = action.payload;
             })
-
 
             // LOGOUT
             .addCase(Logout.pending, (state) => {
@@ -166,12 +188,13 @@ const userSlice = createSlice({
                 state.currentUser = null;
                 state.userChannel = null;
             })
-            .addCase(Logout.rejected, (state) => {
+            .addCase(Logout.rejected, (state, action) => {
                 state.fetchStatus = "error";
+                state.error = action.payload;
             })
 
 
-            // UPDATE PROFILE
+            // UPDATE USER PROFILE
             .addCase(updateUserProfile.pending, (state) => {
                 state.fetchStatus = "pending";
             })
@@ -179,9 +202,38 @@ const userSlice = createSlice({
                 state.currentUser = action.payload;
                 state.fetchStatus = "success";
             })
-            .addCase(updateUserProfile.rejected, (state) => {
+            .addCase(updateUserProfile.rejected, (state, action) => {
                 state.fetchStatus = "error";
-            });
+                state.error = action.payload;
+            })
+
+
+            // ADD VIDEO TO WATCH HISTORY
+            .addCase(addVideoToWatchHistory.pending, (state) => {
+                state.fetchStatus = "pending";
+            })
+            .addCase(addVideoToWatchHistory.fulfilled, (state, action) => {
+                state.fetchStatus = "success";
+                state.watchHistory = action.payload
+            })
+            .addCase(addVideoToWatchHistory.rejected, (state, action) => {
+                state.fetchStatus = "error";
+                state.error = action.payload;
+            })
+
+
+            // GET USER WATCH HISTORY
+            .addCase(fetchWatchHistory.pending, (state) => {
+                state.fetchStatus = "pending"
+            })
+            .addCase(fetchWatchHistory.fulfilled, (state, action) => {
+                state.fetchStatus = "success"
+                state.watchHistory = action.payload;
+            })
+            .addCase(fetchWatchHistory.rejected, (state, action) => {
+                state.fetchStatus = "error"
+                state.error = action.payload;
+            })
     },
 });
 

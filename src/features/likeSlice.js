@@ -1,10 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "./axios";
 
-/* ----------------------------------
-   ASYNC THUNKS
----------------------------------- */
-
 // Toggle video like
 export const toggleVideoLike = createAsyncThunk(
     "likes/toggleVideoLike",
@@ -57,13 +53,24 @@ export const fetchLikedVideos = createAsyncThunk(
     }
 );
 
-/* ----------------------------------
-   SLICE
----------------------------------- */
+// Remove video from liked videos
+export const removeLikedVideo = createAsyncThunk(
+    "like/removeLikedVideo",
+    async (videoId, { rejectWithValue }) => {
+        try {
+            await api.delete(`/likes/remove-video/${videoId}`);
+            return videoId; // return videoId for state update
+        } catch (err) {
+            return rejectWithValue(
+                err.response?.data?.message || "Failed to remove liked video"
+            );
+        }
+    }
+);
 
 const initialState = {
     likedVideos: [],
-    loading: false,
+    fetchStatus: false,
     error: null,
 };
 
@@ -77,51 +84,67 @@ const likeSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Toggle like (video / comment / post)
+            // Toggle like video
             .addCase(toggleVideoLike.pending, (state) => {
-                state.loading = true;
+                state.fetchStatus = "loading";
             })
-            .addCase(toggleCommentLike.pending, (state) => {
-                state.loading = true;
+            .addCase(toggleVideoLike.fulfilled, (state) => {
+                state.fetchStatus = "success";
             })
-            .addCase(togglePostLike.pending, (state) => {
-                state.loading = true;
+            .addCase(toggleVideoLike.rejected, (state, action) => {
+                state.fetchStatus = "error";
+                state.error = action.payload;
             })
 
-            .addCase(toggleVideoLike.fulfilled, (state) => {
-                state.loading = false;
+            // Toggle like comment
+            .addCase(toggleCommentLike.pending, (state) => {
+                state.fetchStatus = "loading";
             })
             .addCase(toggleCommentLike.fulfilled, (state) => {
-                state.loading = false;
-            })
-            .addCase(togglePostLike.fulfilled, (state) => {
-                state.loading = false;
-            })
-
-            .addCase(toggleVideoLike.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
+                state.fetchStatus = "success";
             })
             .addCase(toggleCommentLike.rejected, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "error";
                 state.error = action.payload;
             })
+
+            // Toggle like post
+            .addCase(togglePostLike.pending, (state) => {
+                state.fetchStatus = "loading";
+            })
+            .addCase(togglePostLike.fulfilled, (state) => {
+                state.fetchStatus = "success";
+            })
             .addCase(togglePostLike.rejected, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "error";
                 state.error = action.payload;
             })
 
             // Fetch liked videos
             .addCase(fetchLikedVideos.pending, (state) => {
-                state.loading = true;
+                state.fetchStatus = "loading";
             })
             .addCase(fetchLikedVideos.fulfilled, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "success";
                 state.likedVideos = action.payload;
             })
             .addCase(fetchLikedVideos.rejected, (state, action) => {
-                state.loading = false;
+                state.fetchStatus = "error";
                 state.error = action.payload;
+            })
+
+            // remove video form liked videos
+            .addCase(removeLikedVideo.pending, (state) => {
+                state.fetchStatus = "pending";
+            })
+            .addCase(removeLikedVideo.fulfilled, (state, action) => {
+                state.fetchStatus = "success";
+                state.likedVideos = state.likedVideos.filter(
+                    (like) => like.video._id !== action.payload
+                );
+            })
+            .addCase(removeLikedVideo.rejected, (state) => {
+                state.fetchStatus = "error";
             });
     },
 });

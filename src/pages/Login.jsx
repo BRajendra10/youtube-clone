@@ -35,12 +35,14 @@ export default function Login() {
         },
         validationSchema,
         onSubmit: async (values) => {
-            dispatch(LoginUser(values))
-                .unwrap()
-                .then(() => toast.success("Loged in successfully"))
-                .catch(() => toast.error("failed to login !!"))
-            
-            navigate("/");
+            try{
+                await dispatch(LoginUser(values)).unwrap();
+                
+                toast.success("Loged in successfully");
+                navigate("/");
+            }catch(error){
+                toast.error(error?.message || "failed to login !!")
+            }  
         },
     });
 

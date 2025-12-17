@@ -14,17 +14,8 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteVideo } from "../features/videoSlice";
+import { formatDuration } from "../store/formate";
 import { toast } from "sonner";
-
-function formatDuration(seconds) {
-    if (!seconds) return "00:00";
-
-    const total = Math.floor(seconds);
-    const mins = Math.floor(total / 60);
-    const secs = (total % 60).toString().padStart(2, "0");
-
-    return `${mins}:${secs}`;
-}
 
 export default function Video({ id, data, onSave }) {
     const navigate = useNavigate();

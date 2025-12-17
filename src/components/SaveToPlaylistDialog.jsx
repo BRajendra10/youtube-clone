@@ -39,6 +39,7 @@ export default function SaveToPlaylistDialog({
 
         setNewPlaylistName("");
         setNewPlaylistDescription("");
+        onClose();
     };
 
     const handleVideoSaveToPlaylist = (playlistId) => {
@@ -46,12 +47,13 @@ export default function SaveToPlaylistDialog({
             .unwrap()
             .then(() => toast.success("Video added to playlist successfully"))
             .catch(() => toast.error("Failed to add video !!"))
+
+        onClose();
     };
 
     useEffect(() => {
         dispatch(fetchUserPlaylists(currentUser._id))
             .unwrap()
-            // .then(() => toast.success("Fetched user playlists successfully"))
             .catch(() => toast.error("Failed to fetch user playlists !!"))
     }, [dispatch, currentUser]);
 

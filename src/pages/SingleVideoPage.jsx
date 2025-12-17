@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { fetchVideoById } from "../features/videoSlice.js";
@@ -10,22 +10,37 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
-import { toggleSubscribtion } from "../features/userSlice.js";
+import { addVideoToWatchHistory, toggleSubscribtion } from "../features/userSlice.js";
 import SubscriptionButton from "../components/SubscriptionButton.jsx";
-import { toggleVideoLike } from "../features/likeSlice.js";
+import { toggleCommentLike, toggleVideoLike } from "../features/likeSlice.js";
+
+import {
+    addComment,
+    getVideoComments
+} from "../features/commentSlice.js";
 
 export default function SingleVideoPage() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { videoId, playlistId } = useParams();
 
+    const [comment, setComment] = useState("");
+
     const { videos, selectedVideo, reqStatus } = useSelector(state => state.video);
     const { selectedPlaylist, loading: playlistLoading } = useSelector(state => state.playlist);
+    const { currentUser } = useSelector(state => state.user);
+
+    const {
+        comments,
+        page,
+        hasMore,
+        fetchStatus
+    } = useSelector(state => state.comment);
 
     // Playlist Videos
     const playlistVideos = playlistId ? selectedPlaylist?.videos || [] : [];
 
-    // Fetch video + playlist
+    // Fetch video + playlist + comments
     useEffect(() => {
         dispatch(fetchVideoById(videoId))
             .unwrap()
@@ -37,6 +52,10 @@ export default function SingleVideoPage() {
                 .catch(() => toast.error("Failed to load playlist"));
         }
 
+        dispatch(getVideoComments({ videoId, page: 1 }));
+
+        dispatch(addVideoToWatchHistory(videoId))
+
         window.scrollTo(0, 0);
     }, [dispatch, videoId, playlistId]);
 
@@ -44,17 +63,41 @@ export default function SingleVideoPage() {
         dispatch(toggleSubscribtion(channelId))
             .unwrap()
             .then(() => toast.success("toggle subscrbtion successfully"))
-            .catch(() => toast.error("Subscribtion button failed !!"))
+            .catch(() => toast.error("Subscribtion button failed !!"));
     };
 
-    const handleVideoLike = () => {
+    const handleVideoLike = async () => {
         try {
-            dispatch(toggleVideoLike(videoId)).unwrap();
-            toast.success("Toggle like successfully")
+            await dispatch(toggleVideoLike(videoId)).unwrap();
+            toast.success("Toggle like successfully");
         } catch (error) {
-            toast.error(error.message || "Failed to toggle like !!")
+            toast.error(error.message || "Failed to toggle like !!");
         }
-    }
+    };
+
+    const handleAddComment = async () => {
+        try {
+            await dispatch(addComment({ videoId, comment })).unwrap();
+            setComment("");
+        } catch (error) {
+            toast.error(error?.message || "Failed to comment on video !!");
+        }
+    };
+
+    const handleCommentLike = async (commentId) => {
+        try {
+            await dispatch(toggleCommentLike(commentId)).unwrap();
+            toast.success("Toggle like successfully");
+        } catch (error) {
+            toast.error(error.message || "Failed to toggle like !!");
+        }
+    };
+
+    const loadMoreComments = () => {
+        if (hasMore && fetchStatus !== "loading") {
+            dispatch(getVideoComments({ videoId, page: page + 1 }));
+        }
+    };
 
     // Show loading skeleton
     if (reqStatus === "pending" || (playlistId && playlistLoading)) {
@@ -67,20 +110,10 @@ export default function SingleVideoPage() {
         );
     }
 
-    if (!selectedVideo) {
-        return null;
-    }
+    if (!selectedVideo) return null;
 
     const video = selectedVideo;
-
-    const comments = [
-        { id: 1, name: "Alex Carter", text: "Amazing video! Very well explained!", time: "2 days ago" },
-        { id: 2, name: "John Doe", text: "The UI looks so clean bro 🔥", time: "5 days ago" },
-        { id: 3, name: "Michael", text: "Subscribed! Waiting for more content.", time: "1 week ago" }
-    ];
-
     const sidebarVideos = playlistId ? playlistVideos : videos;
-    console.log(video)
 
     return (
         <div className="min-h-screen w-full text-white p-6 flex flex-col lg:flex-row gap-8">
@@ -105,7 +138,6 @@ export default function SingleVideoPage() {
 
                 {/* CHANNEL HEADER */}
                 <div className="flex items-center justify-between pb-2">
-
                     <div className="flex items-center gap-5">
                         <Link to={`/${video.owner?.username}`} className="flex items-center gap-3">
                             <Avatar className="h-14 w-14">
@@ -121,48 +153,24 @@ export default function SingleVideoPage() {
 
                         <Button
                             className="bg-white text-black hover:bg-gray-200 px-6 py-2 rounded-full font-semibold"
-                            onClick={() => handleSubscribeToggle(selectedVideo?.owner?._id)}
+                            onClick={() => handleSubscribeToggle(video.owner?._id)}
                         >
                             Subscribe
                         </Button>
                     </div>
 
-                    {/* LIKE / DISLIKE / SHARE */}
-                    <div className="flex items-center gap-3 bg-neutral-800 px-5 py-2 rounded-full w-fit shadow-md">
-
-                        <button
-                            onClick={handleVideoLike}
-                            className={`flex items-center gap-1 transition-colors
-                                ${video?.isLiked ? "text-white" : "text-gray-300 hover:text-white"}
-                            `}
-                        >
-                            <ThumbsUp
-                                className={`h-5 w-5 transition-transform
-                                    ${video?.isLiked ? "fill-white scale-105" : ""}
-                                    `}
-                            />
-
-                            <span className="text-sm select-none">
-                                {video?.likesCount}
-                            </span>
+                    {/* LIKE / SHARE */}
+                    <div className="flex items-center gap-3 bg-neutral-800 px-5 py-2 rounded-full">
+                        <button onClick={handleVideoLike} className="flex items-center gap-1">
+                            <ThumbsUp className={`h-5 w-5 ${video.isLiked ? "fill-white" : ""}`} />
+                            <span className="text-sm">{video.likesCount}</span>
                         </button>
-
-                        <div className="w-px h-5 bg-neutral-700"></div>
-
-                        <button className="flex items-center gap-1 text-gray-300 hover:text-white"
-                            onClick={() => toast("You disliked the video 👎")}
-                        >
-                            <ThumbsDown className="h-5 w-5" />
-                        </button>
-
-                        <div className="w-px h-5 bg-neutral-700"></div>
 
                         <button
                             onClick={() => {
                                 navigator.clipboard.writeText(window.location.href);
-                                toast.success("Link copied to clipboard 🔗");
+                                toast.success("Link copied 🔗");
                             }}
-                            className="flex items-center gap-1 text-gray-300 hover:text-white"
                         >
                             <Share2 className="h-5 w-5" />
                         </button>
@@ -170,46 +178,117 @@ export default function SingleVideoPage() {
                 </div>
 
                 {/* DESCRIPTION */}
-                <div className="bg-neutral-800/70 p-4 rounded-xl text-sm leading-relaxed shadow-md">
+                <div className="bg-neutral-800/70 p-4 rounded-xl text-sm">
                     {video.description || "No description provided."}
                 </div>
 
                 {/* COMMENTS */}
-                <div className="mt-4">
-                    <h2 className="text-xl font-semibold mb-4">Comments</h2>
+                <div className="mt-6">
+                    <h2 className="text-lg font-semibold mb-4">
+                        Comments ({comments.length})
+                    </h2>
 
-                    <div className="flex items-start gap-3 mb-6">
-                        <Avatar className="h-10 w-10"><AvatarFallback>U</AvatarFallback></Avatar>
-                        <input
-                            placeholder="Add a comment..."
-                            className="bg-neutral-800 w-full px-4 py-2 rounded-lg outline-none border border-neutral-700 text-sm"
-                            onFocus={() => toast("Commenting coming soon 💬")}
-                        />
+                    {/* ADD COMMENT */}
+                    <div className="flex gap-3 mb-6">
+                        <Avatar className="h-9 w-9">
+                            <AvatarImage src={currentUser?.avatar} />
+                            <AvatarFallback>
+                                {currentUser?.username?.[0]?.toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+
+                        <div className="flex-1">
+                            <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                placeholder={currentUser ? "Add a comment…" : "Login to add a comment"}
+                                disabled={!currentUser}
+                                rows={2}
+                                className="w-full resize-none bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm"
+                            />
+
+                            {currentUser && (
+                                <div className="flex justify-end gap-3 mt-2">
+                                    <button
+                                        onClick={() => setComment("")}
+                                        className="text-sm text-neutral-400"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleAddComment}
+                                        disabled={!comment.trim()}
+                                        className="bg-white text-black px-4 py-1.5 rounded-full text-sm"
+                                    >
+                                        Comment
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="flex flex-col gap-6">
-                        {comments.map(c => (
-                            <div key={c.id} className="flex gap-3">
-                                <Avatar className="h-10 w-10">
-                                    <AvatarFallback>{c.name.charAt(0)}</AvatarFallback>
+                    {/* COMMENTS LIST */}
+                    <div className="flex flex-col gap-5">
+                        {comments.map((c) => (
+                            <div
+                                key={c._id}
+                                className="flex gap-3 rounded-xl p-3 hover:bg-neutral-800/60 transition"
+                            >
+                                {/* AVATAR */}
+                                <Avatar className="h-9 w-9 shrink-0">
+                                    <AvatarImage src={c.owner?.avatar} />
+                                    <AvatarFallback>
+                                        {c.owner?.username?.charAt(0).toUpperCase()}
+                                    </AvatarFallback>
                                 </Avatar>
 
-                                <div>
-                                    <p className="font-semibold text-sm">
-                                        {c.name} <span className="text-xs text-gray-500">• {c.time}</span>
+                                {/* CONTENT */}
+                                <div className="flex-1">
+                                    {/* HEADER */}
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm font-semibold">
+                                            {c.owner?.username}
+                                            <span className="ml-2 text-xs text-gray-400">
+                                                {new Date(c.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </p>
+                                    </div>
+
+                                    {/* COMMENT TEXT */}
+                                    <p className="text-sm text-gray-300 mt-1 leading-relaxed">
+                                        {c.content}
                                     </p>
-                                    <p className="text-sm text-gray-300">{c.text}</p>
+
+                                    {/* ACTIONS */}
+                                    <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                                        <button onClick={handleCommentLike} className="flex items-center gap-1">
+                                            <ThumbsUp className={`h-5 w-5 ${c.isLiked ? "fill-white" : ""}`} />
+                                            <span className="text-sm">{c.likeCount}</span>
+                                        </button>
+
+                                        <button className="hover:text-white transition">
+                                            Reply
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                </div>
 
+
+                    {hasMore && (
+                        <button
+                            onClick={loadMoreComments}
+                            className="mt-4 text-sm text-gray-400 hover:text-white"
+                        >
+                            Load more comments
+                        </button>
+                    )}
+                </div>
             </div>
 
-            {/* RIGHT SIDE — PLAYLIST VIDEOS */}
-            <div className="w-full lg:w-[340px] flex flex-col gap-4 max-h-[85vh] overflow-y-auto sticky top-6">
-
+            {/* RIGHT SIDE */}
+            <div className="w-full lg:w-[340px] flex flex-col gap-4 sticky top-6">
                 <h2 className="text-lg font-semibold mb-2">
                     {playlistId ? "Playlist Videos" : "Recommended"}
                 </h2>
@@ -217,28 +296,17 @@ export default function SingleVideoPage() {
                 {sidebarVideos?.map(item => (
                     <div
                         key={item._id}
-                        className={`flex gap-3 p-2 rounded-lg cursor-pointer hover:bg-neutral-800/60 hover:scale-[1.01] transition ${item._id === video._id ? "bg-neutral-800" : ""
-                            }`}
-                        onClick={() => {
-                            toast.success(`Playing: ${item.title}`);
-                            navigate(`/video/${item._id}/${playlistId ? playlistId : ""}`);
-                        }}
+                        className="flex gap-3 p-2 rounded-lg hover:bg-neutral-800 cursor-pointer"
+                        onClick={() => navigate(`/video/${item._id}/${playlistId || ""}`)}
                     >
-                        <div className="w-42 aspect-video rounded-lg overflow-hidden">
-                            <img src={item.thumbnail} className="w-full h-full object-cover" />
-                        </div>
-
-                        <div className="flex-1">
+                        <img src={item.thumbnail} className="w-32 rounded-lg" />
+                        <div>
                             <p className="text-sm font-medium line-clamp-2">{item.title}</p>
-                            <p className="text-xs text-gray-400 mt-1">{item.owner?.username}</p>
-                            <p className="text-xs text-gray-500">
-                                {new Date(item.createdAt).toLocaleDateString()}
-                            </p>
+                            <p className="text-xs text-gray-400">{item.owner?.username}</p>
                         </div>
                     </div>
                 ))}
             </div>
-
         </div>
     );
 }

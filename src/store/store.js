@@ -4,6 +4,8 @@ import subscriptionReducer from "../features/subscriptionSlice.js";
 import videoReducers from '../features/videoSlice.js'
 import playlistReducers from '../features/playlistSlice.js';
 import postReducers from '../features/postSlice.js';
+import commentReducers from '../features/commentSlice.js';
+import LikeReducers from '../features/likeSlice.js';
 
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
@@ -36,7 +38,9 @@ const rootReducer = combineReducers({
   subscription: subscriptionReducer,
   video: videoReducers,
   playlist: playlistReducers,
-  post: postReducers
+  post: postReducers,
+  comment: commentReducers,
+  like: LikeReducers
 });
 
 const persistedReducer = persistReducer(rootPersistConfig, rootReducer);
