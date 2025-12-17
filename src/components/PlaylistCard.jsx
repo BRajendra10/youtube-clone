@@ -33,7 +33,7 @@ export default function PlaylistCard({ data, onSelect }) {
         <Link to={`/my-playlist/${data._id}`}>
             <div className="relative">
                 <img
-                    src={"https://picsum.photos/600/350?random=20"}
+                    src={data.thumbnail || "https://picsum.photos/600/350?random=20"}
                     className="w-full h-44 object-cover"
                 />
 

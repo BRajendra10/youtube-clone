@@ -94,13 +94,8 @@ export default function AppSidebar() {
                 {
                   icon: <ThumbsUp className="w-5 h-5" />,
                   label: "Liked Videos",
-                  path: "/Liked Videos"
-                },
-                {
-                  icon: <Clock4 className="w-5 h-5" />,
-                  label: "Watch Later",
-                  path: "/Watch Later"
-                },
+                  path: "/liked-videos"
+                }
               ].map((item, index) => (
                 <SidebarMenuItem key={index}>
                   <NavLink to={item.path} end>

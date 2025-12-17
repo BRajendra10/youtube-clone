@@ -36,6 +36,7 @@ const VideoSkeleton = () => (
 export default function HomePage() {
     const dispatch = useDispatch();
     const { videos, fetchStatus } = useSelector((state) => state.video);
+    
     const [selectedVideo, setSelectedVideo] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
