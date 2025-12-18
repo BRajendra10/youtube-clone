@@ -10,7 +10,7 @@ import { fetchUserPlaylists } from "../features/playlistSlice";
 
 // UI Components
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -24,6 +24,7 @@ import SaveToPlaylistDialog from "../components/SaveToPlaylistDialog";
 import SubscriptionButton from "../components/SubscriptionButton";
 import PostCard from "../components/PostCard";
 import CreatePostBox from "../components/CreatePostBox";
+import Tabs from "./Tabs";
 
 import { EditProfileModal } from "../components/EditProfileModal";
 import { EditPlaylistModal } from "../components/EditPlaylistModal";
@@ -82,21 +83,18 @@ export default function UserChannel() {
   const dispatch = useDispatch();
   const { username } = useParams();
 
-  // Dialog state
-  const [selectedVideo, setSelectedVideo] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // // Dialog state
+  // const [selectedVideo, setSelectedVideo] = useState(null);
+  // const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Playlist modal
-  const [openModal, setOpenModal] = useState(false);
-  const [editPlaylist, setEditPlaylist] = useState(null);
+  // // Playlist modal
+  // const [openModal, setOpenModal] = useState(false);
+  // const [editPlaylist, setEditPlaylist] = useState(null);
 
   // Profile modal
   const [editOpen, setEditOpen] = useState(false);
 
   const { userChannel, currentUser } = useSelector((state) => state.user);
-  const { videos, fetchStatus } = useSelector((state) => state.video);
-  const { playlists } = useSelector((state) => state.playlist);
-  const { posts } = useSelector((state) => state.post);
 
   useEffect(() => {
     dispatch(fetchingUserChannel({ username }));
@@ -185,133 +183,7 @@ export default function UserChannel() {
         </div>
       </div>
 
-      {/* TABS */}
-      <div className="w-full pt-2 pb-10">
-        <Tabs
-          defaultValue="videos"
-          className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-8"
-        >
-          {/* TAB BUTTONS */}
-          <TabsList className="flex gap-3 bg-transparent p-0 mt-3">
-            {["videos", "posts", "playlists", "about"].map((tab) => (
-              <TabsTrigger
-                key={tab}
-                value={tab}
-                className="
-                  px-4 py-2 text-sm sm:text-base font-medium
-                  bg-stone-900 text-stone-700 hover:bg-stone-700
-                  data-[state=active]:bg-stone-950 
-                  data-[state=active]:text-white
-                "
-              >
-                {tab[0].toUpperCase() + tab.slice(1)}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          <hr className="border border-stone-800" />
-
-          {/* ==================== VIDEOS TAB ==================== */}
-          <TabsContent value="videos" className="py-8">
-            {fetchStatus === "loading" && (
-              <p className="text-sm text-muted-foreground">Loading videos...</p>
-            )}
-
-            {fetchStatus === "success" && videos.length === 0 && (
-              <p className="text-sm text-muted-foreground">No videos yet.</p>
-            )}
-
-            {fetchStatus === "success" && videos.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {videos.map((video, index) => (
-                  <Video
-                    key={index}
-                    id={video._id}
-                    data={video}
-                    onSave={() => {
-                      setSelectedVideo(video._id);
-                      setIsDialogOpen(true);
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          {/* ==================== POSTS TAB COMPONENT ==================== */}
-
-          <TabsContent value="posts" className="py-8 space-y-6">
-            {username === currentUser.username && <CreatePostBox />}
-
-            {fetchStatus === "loading" && (
-              <p className="text-sm text-muted-foreground">Loading posts...</p>
-            )}
-
-            {fetchStatus === "success" && posts.length === 0 && (
-              <p className="text-sm text-muted-foreground">No posts yet.</p>
-            )}
-
-            {fetchStatus === "success" && posts.length > 0 && (
-              <div className="max-w-2xl space-y-4">
-                {posts.map((post) => (
-                  <PostCard
-                    
-                    key={post._id}
-                    post={post}
-                    isOwner={post.user?._id === currentUser?._id}
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-
-          {/* ==================== ABOUT TAB ==================== */}
-          <TabsContent value="playlists" className="py-8">
-            {/* LOADING STATE */}
-            {fetchStatus === "loading" && (
-              <p className="text-sm text-muted-foreground">Loading playlists...</p>
-            )}
-
-            {/* EMPTY STATE */}
-            {fetchStatus === "success" && playlists.length === 0 && (
-              <p className="text-sm text-muted-foreground">No playlists yet.</p>
-            )}
-
-            {/* PLAYLIST GRID */}
-            {fetchStatus === "success" && playlists.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {playlists.map((item, index) => (
-                  <PlaylistCard
-                    key={item._id || index}
-                    data={item}
-                    onSelect={(data) => {
-                      setOpenModal(true);
-                      setEditPlaylist(data);
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-        </Tabs>
-      </div>
-
-      <SaveToPlaylistDialog
-        open={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        videoId={selectedVideo}
-      />
-
-      <EditPlaylistModal
-        open={openModal}
-        onClose={() => {
-          setOpenModal(false);
-          setEditPlaylist(null);
-        }}
-        initialData={editPlaylist || {}}
-      />
+      <Tabs />
 
       <EditProfileModal open={editOpen} onClose={() => setEditOpen(false)} />
     </div>

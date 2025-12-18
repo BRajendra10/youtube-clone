@@ -1,17 +1,18 @@
 import React from "react";
 import { formatDate } from "../store/formate";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 export default function VideoListItem({ video, children, isLikedVideo }) {
     const { currentUser } = useSelector((state) => state.user);
     
     let isOwner = video.owner._id === currentUser._id;
     isOwner = isLikedVideo ? true : isOwner;
-    console.log(video, isLikedVideo)
 
     return (
-        <div
+        <Link
             key={video._id}
+            to={`/video/${video._id}`}
             className="flex flex-col sm:flex-row gap-4 p-3 rounded-xl hover:bg-neutral-900 transition cursor-pointer"
         >
             {/* Thumbnail */}
@@ -41,6 +42,6 @@ export default function VideoListItem({ video, children, isLikedVideo }) {
 
                 {isOwner && children}
             </div>
-        </div>
+        </Link>
     )
 }

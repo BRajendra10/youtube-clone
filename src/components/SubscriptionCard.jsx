@@ -28,7 +28,7 @@ export default function SubscriptionCard({ data }) {
         onClick={() => openChannel(data.username)}
     >
         {/* {console.log(channel.channelId)} */}
-        <CardContent className="flex items-center gap-4 sm:gap-6">
+        <CardContent className="flex items-center gap-3 sm:gap-6">
             {/* Avatar */}
             <img
                 src={data.avatar}
@@ -40,11 +40,11 @@ export default function SubscriptionCard({ data }) {
             <div className="flex flex-col  sm:flex-row sm:justify-between sm:items-center flex-1 gap-2">
                 {/* User Info */}
                 <div className="space-y-0.5">
-                    <h3 className="text-base sm:text-xl font-semibold text-neutral-100 leading-tight">
+                    <h3 className="text-base sm:text-xl font-semibold">
                         {data.username}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-neutral-400">
+                    <p className="text-[11px] sm:text-sm text-neutral-400">
                         {data.fullName}
                     </p>
 
@@ -58,7 +58,7 @@ export default function SubscriptionCard({ data }) {
 
                 {/* Button */}
                 <button
-                    className=" mt-1 px-4 py-1.5 rounded-full border border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition"
+                    className="mt-2 sm:mt-0 px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-full border border-neutral-700 bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition"
                     onClick={(e) => {
                         e.stopPropagation();
                         handleUnsubscribe(data.channelId);
