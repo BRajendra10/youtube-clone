@@ -12,8 +12,8 @@ import HomePage from "../pages/Home";
 import SingleVideoPage from "../pages/SingleVideoPage"; // new component
 import PlaylistPage from "../pages/Playlists";
 import SinglePlaylistPage from "../pages/SinglePlaylistPage";
-import PostsPage from "../pages/PostsPage";
-import LikedVideosPage from "../pages/LikedVideosPage";
+import PostsPage from "../pages/Posts";
+import LikedVideosPage from "../pages/LikedVideos";
 import WatchHistoryPage from "../pages/WatchHistory";
 
 export default function Navigation() {

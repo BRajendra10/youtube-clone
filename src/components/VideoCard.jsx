@@ -23,8 +23,6 @@ export default function Video({ id, data, onSave }) {
     const { currentUser } = useSelector((state) => state.user);
 
     const handleDelete = async (videoId) => {
-        if (!confirm("Delete this video permanently?")) return;
-
         try {
             await dispatch(deleteVideo(videoId)).unwrap();
             toast.success("Video deleted successfully!");

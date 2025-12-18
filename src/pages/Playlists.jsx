@@ -6,6 +6,18 @@ import { EditPlaylistModal } from "../components/EditPlaylistModal";
 import { toast } from "sonner";
 import PlaylistCard from "../components/PlaylistCard";
 
+function PlaylistCardSkeleton() {
+    return (
+        <div className="rounded-xl overflow-hidden border border-neutral-800 animate-pulse">
+            <div className="w-full h-44 bg-neutral-800" />
+            <div className="p-3 space-y-2">
+                <div className="h-4 bg-neutral-800 rounded w-3/4" />
+                <div className="h-3 bg-neutral-800 rounded w-1/2" />
+            </div>
+        </div>
+    );
+}
+
 export default function PlaylistsPage() {
     const dispatch = useDispatch();
     const { currentUser } = useSelector((state) => state.user);
@@ -36,8 +48,10 @@ export default function PlaylistsPage() {
 
             {/* Loading */}
             {isLoading && (
-                <div className="flex mt-20 text-neutral-400">
-                    Loading playlists...
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <PlaylistCardSkeleton key={i} />
+                    ))}
                 </div>
             )}
 

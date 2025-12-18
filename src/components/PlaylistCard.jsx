@@ -25,7 +25,7 @@ export default function PlaylistCard({ data, onSelect }) {
             .catch(() => toast.error("Playlist delete failed !!"))
     }
 
-    const isOwner = currentUser?._id === data?.owner?._id;
+    const isOwner = currentUser?._id === data?.owner; 
 
     return <div
         className="rounded-xl overflow-hidden hover:bg-[#202020] transition relative"

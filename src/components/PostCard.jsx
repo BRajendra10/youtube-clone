@@ -13,12 +13,13 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, MoreVertical, Pencil, Share2, Trash } from "lucide-react";
+import { formatDate } from "../store/formate";
 
 export default function PostCard({ post, isOwner }) {
     const dispatch = useDispatch();
 
     const [isEditing, setIsEditing] = useState(false);
-    const [editedContent, setEditedContent] = useState(post.content);
+    const [editedContent, setEditedContent] = useState("");
 
     const handleUpdate = async () => {
         if (!editedContent.trim()) return;
@@ -30,8 +31,8 @@ export default function PostCard({ post, isOwner }) {
 
             setIsEditing(false);
             toast.success("Post updated");
-        } catch {
-            toast.error("Failed to update post");
+        } catch (error) {
+            toast.error(error?.message || "Failed to update post");
         }
     };
 
@@ -39,16 +40,16 @@ export default function PostCard({ post, isOwner }) {
         try {
             await dispatch(deletePost({ postId: post._id })).unwrap();
             toast.success("Post deleted");
-        } catch {
-            toast.error("Failed to delete post");
+        } catch (error) {
+            toast.error(error?.message || "Failed to delete post");
         }
     };
 
     const handlePostLike = async () => {
         try {
             await dispatch(togglePostLike(post._id)).unwrap();
-        } catch {
-            toast.error("Failed to toggle like");
+        } catch (error) {
+            toast.error(error?.message || "Failed to toggle like");
         }
     };
 
@@ -68,14 +69,14 @@ export default function PostCard({ post, isOwner }) {
                             {post.owner?.fullName}
                         </p>
                         <span className="text-xs text-muted-foreground">
-                            • {new Date(post.createdAt).toLocaleTimeString()}
+                            • {formatDate(post.createdAt)}
                         </span>
                     </div>
 
                     {/* CONTENT */}
                     {isEditing ? (
                         <textarea
-                            className="w-full mt-2 bg-black/40 border border-stone-700 rounded-md p-2 text-sm text-white focus:outline-none"
+                            className="w-full mt-3 bg-black/40 border border-stone-700 rounded-md p-2 text-sm text-white focus:outline-none"
                             value={editedContent}
                             onChange={(e) => setEditedContent(e.target.value)}
                         />
@@ -89,16 +90,14 @@ export default function PostCard({ post, isOwner }) {
                     <div className="flex items-center gap-4 mt-3 text-stone-400">
                         <button
                             onClick={handlePostLike}
-                            className={`flex items-center gap-1 transition-colors ${
-                                post.isLiked
-                                    ? "text-white"
-                                    : "hover:text-white"
-                            }`}
+                            className={`flex items-center gap-1 transition-colors ${post.isLiked
+                                ? "text-white"
+                                : "hover:text-white"
+                                }`}
                         >
                             <Heart
-                                className={`h-4 w-4 ${
-                                    post.isLiked ? "fill-white" : ""
-                                }`}
+                                className={`h-4 w-4 ${post.isLiked ? "fill-white" : ""
+                                    }`}
                             />
                             <span className="text-sm">
                                 {post.likesCount}
@@ -125,7 +124,10 @@ export default function PostCard({ post, isOwner }) {
 
                             {isOwner && (
                                 <DropdownMenuItem
-                                    onClick={() => setIsEditing(true)}
+                                    onClick={() => {
+                                        setIsEditing(true)
+                                        setEditedContent(post.content)
+                                    }}
                                 >
                                     <Pencil className="h-4 w-4 mr-2" />
                                     Edit

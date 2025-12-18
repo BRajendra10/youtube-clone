@@ -5,6 +5,32 @@ import { toast } from "sonner";
 
 import VideoListItem from "../components/VideoList";
 
+
+function LikedInfoSkeleton() {
+    return (
+        <div className="flex flex-col gap-4 animate-pulse">
+            <div className="w-full h-56 bg-neutral-800 rounded-xl" />
+            <div className="h-7 w-2/3 bg-neutral-800 rounded" />
+            <div className="h-4 w-full bg-neutral-800 rounded" />
+            <div className="h-4 w-1/3 bg-neutral-800 rounded" />
+        </div>
+    );
+}
+
+function VideoItemSkeleton() {
+    return (
+        <div className="flex gap-4 p-3 border border-neutral-800 rounded-lg animate-pulse">
+            <div className="w-40 h-24 bg-neutral-800 rounded-lg shrink-0" />
+            <div className="flex flex-col gap-3 flex-1">
+                <div className="h-4 w-3/4 bg-neutral-800 rounded" />
+                <div className="h-3 w-1/2 bg-neutral-800 rounded" />
+                <div className="h-3 w-1/3 bg-neutral-800 rounded" />
+            </div>
+        </div>
+    );
+}
+
+
 export default function LikedVideosPage() {
     const dispatch = useDispatch();
     const { likedVideos, fetchStatus } = useSelector((state) => state.like);
@@ -14,15 +40,19 @@ export default function LikedVideosPage() {
             await dispatch(removeLikedVideo(videoId)).unwrap();
             toast.success("Remove video successfully");
         } catch (error) {
-            console.log(error);
-            toast.error(error?.message || "Failed to remove video from liked videos !!")
+            toast.error(
+                error?.message ||
+                    "Failed to remove video from liked videos !!"
+            );
         }
-    }
+    };
 
     useEffect(() => {
         dispatch(fetchLikedVideos())
             .unwrap()
-            .catch(() => toast.error("Failed to fetch liked videos"));
+            .catch(() =>
+                toast.error("Failed to fetch liked videos")
+            );
     }, [dispatch]);
 
     const isLoading = fetchStatus === "pending";
@@ -31,8 +61,16 @@ export default function LikedVideosPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex justify-center items-center text-neutral-400">
-                Loading liked videos...
+            <div className="min-h-screen bg-neutral-950 text-white p-5 md:p-10">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    <LikedInfoSkeleton />
+
+                    <div className="lg:col-span-2 flex flex-col gap-4">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <VideoItemSkeleton key={i} />
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -78,7 +116,7 @@ export default function LikedVideosPage() {
                 </div>
 
                 {/* RIGHT — VIDEO LIST */}
-                <div className="md:col-span-2 flex flex-col gap-4">
+                <div className="lg:col-span-2 flex flex-col gap-4">
                     {videos.length === 0 && (
                         <p className="text-gray-400">
                             You haven’t liked any videos yet.
@@ -86,9 +124,15 @@ export default function LikedVideosPage() {
                     )}
 
                     {videos.map((video, index) => (
-                        <VideoListItem key={index} video={video} isLikedVideo={true}>
+                        <VideoListItem
+                            key={index}
+                            video={video}
+                            isLikedVideo={true}
+                        >
                             <button
-                                onClick={() => handleRemoveVideo(video._id)}
+                                onClick={() =>
+                                    handleRemoveVideo(video._id)
+                                }
                                 className="self-start mt-1 px-5 py-1 text-sm bg-red-600 rounded-lg text-white"
                             >
                                 Unlike video

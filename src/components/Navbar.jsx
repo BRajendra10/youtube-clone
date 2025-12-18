@@ -105,7 +105,10 @@ export default function Navbar() {
                                 <TvMinimalPlay className="w-5 h-5" /> Upload video
                             </button>
 
-                            <button className="w-full flex gap-3 px-4 py-2 text-sm hover:bg-muted">
+                            <button 
+                                className="w-full flex gap-3 px-4 py-2 text-sm hover:bg-muted"
+                                onClick={() => navigate("/posts")}    
+                            >
                                 <SquarePen className="w-5 h-5" /> Create a post
                             </button>
                         </div>
