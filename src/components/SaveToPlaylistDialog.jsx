@@ -65,7 +65,7 @@ export default function SaveToPlaylistDialog({
                 </DialogHeader>
 
                 <div className="max-h-60 overflow-y-auto space-y-3 my-3">
-                    {playlists.map((p) => (
+                    {playlists?.map((p) => (
                         <div
                             key={p._id}
                             onClick={() => handleVideoSaveToPlaylist(p._id)}

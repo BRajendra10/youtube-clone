@@ -1,11 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://yotube-backend-2.onrender.com/api/v1",
+  baseURL: import.meta.env.VITE_API_BASE_URI,
   withCredentials: true,
   timeout: 15000,
 });
-
 
 api.interceptors.response.use(
   (response) => response,
@@ -20,6 +19,8 @@ api.interceptors.response.use(
         await api.post("/users/refresh_token");
         return api(originalRequest)
       } catch (refreshError) {
+        
+        window.location.href = "/login";
         return Promise.reject(refreshError)
       }
     }
