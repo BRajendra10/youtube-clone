@@ -88,7 +88,7 @@ export default function SingleVideoPage() {
                 </h1>
 
                 {/* CHANNEL */}
-                <div className="flex items-center justify-between pb-2">
+                <div className="flex flex-col gap-4 pb-2 md:flex-row md:items-center md:justify-between">
                     <div className="flex items-center gap-5">
                         <Link
                             to={`/${video.owner?.username}`}
@@ -120,7 +120,7 @@ export default function SingleVideoPage() {
                     </div>
 
                     {/* LIKE / SHARE */}
-                    <div className="flex items-center bg-neutral-800 px-5 py-2 rounded-full">
+                    <div className="flex items-center bg-neutral-800 px-4 py-2 rounded-full self-end md:self-auto">
                         <button
                             onClick={handleVideoLike}
                             className="flex items-center gap-1 pr-4"
