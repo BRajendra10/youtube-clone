@@ -62,7 +62,7 @@ export default function Signup() {
         await dispatch(RegisterUser(formData)).unwrap();
 
         toast.success("User registered successfully");
-        navigate("/");
+        navigate("/verify-email")
       } catch (error) {
         toast.error(error?.message || "Failed to register user !!")
       }

@@ -56,7 +56,7 @@ export default function VideoForm() {
             thumbnail: null,
           }}
           validationSchema={videoSchema}
-          onSubmit={(values) => {
+          onSubmit={async (values) => {
             const formData = new FormData();
 
             formData.append("title", values.title);
@@ -66,15 +66,20 @@ export default function VideoForm() {
             if (values.thumbnail) formData.append("thumbnail", values.thumbnail);
 
             if (isEdit) {
-              dispatch(updateVideo({ videoId, formData }))
-                .unwrap()
-                .then(() => toast.success("Video updated successfully"))
-                .catch(() => toast.error("Failed to update video playlist !!"))
+              try{
+                await dispatch(updateVideo({ videoId, formData })).unwrap();
+                toast.success("Video updated successfully")
+              } catch(err) {
+                toast.error(err.message || "Failed to update video !!")
+              }
             } else {
-              dispatch(uploadVideo(formData))
-                .unwrap()
-                .then(() => toast.success("Video uploaded successfully"))
-                .catch(() => toast.error("Failed to upload video !!"))
+              console.log("uploading video")
+              try{
+                await dispatch(uploadVideo(formData)).unwrap()
+                toast.success("Video uploaded successfully")
+              } catch(err) {
+                toast.error(err.message || "Failed to u video playlist !!")
+              }
             }
 
             navigate(`/${currentUser.username}`)

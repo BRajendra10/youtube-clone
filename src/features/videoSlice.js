@@ -66,15 +66,36 @@ export const deleteVideo = createAsyncThunk(
     }
 );
 
+export const toggleSubscribtionFromVideo = createAsyncThunk(
+    "video/subscribtion",
+    async (channelId, { rejectWithValue }) => {
+        try {
+            const res = await api.post(`/subscriptions/c/${channelId}`);
+            return res.data.data;
+        } catch (err) {
+            return rejectWithValue(err.response?.data || "Failed to toggle subscription");
+        }
+    }
+);
+
+export const toggleVideoLike = createAsyncThunk(
+    "likes/toggleVideoLike",
+    async (videoId, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/likes/toggle/v/${videoId}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to toggle video like");
+        }
+    }
+);
+
 // -------------------- INITIAL STATE --------------------
 
 const initialState = {
     videos: [],
     selectedVideoId: null,
     fetchStatus: null,
-    uploadStatus: null,
-    updateStatus: null,
-    deleteStatus: null,
     error: null
 };
 
@@ -123,6 +144,21 @@ const videoSlice = createSlice({
                 state.error = action.payload;
             })
 
+            .addCase(toggleSubscribtionFromVideo.pending, (state) => {
+                state.subscriptionStatus = "pending";
+            })
+            .addCase(toggleSubscribtionFromVideo.fulfilled, (state, action) => {
+                state.subscriptionStatus = "success";
+                if (state.selectedVideo?.owner) {
+                    state.selectedVideo.owner.isSubscribed = action.payload.isSubscribed;
+                }
+            })
+            .addCase(toggleSubscribtionFromVideo.rejected, (state, action) => {
+                state.subscriptionStatus = "error";
+                state.error = action.payload;
+            })
+
+
             // Update video
             .addCase(updateVideo.pending, (state) => {
                 state.updateStatus = "pending";
@@ -146,7 +182,25 @@ const videoSlice = createSlice({
             .addCase(deleteVideo.rejected, (state, action) => {
                 state.deleteStatus = "error";
                 state.error = action.payload;
-            });
+            })
+
+            .addCase(toggleVideoLike.pending, (state) => {
+                state.fetchStatus = "loading";
+            })
+            .addCase(toggleVideoLike.fulfilled, (state, action) => {
+                state.fetchStatus = "success";
+
+                const { videoId, likeState } = action.payload;
+                const video = state.videos.find((v) => v._id === videoId);
+                if (!video) return;
+
+                video.isLiked = likeState;
+                video.likesCount += likeState ? 1 : -1
+            })
+            .addCase(toggleVideoLike.rejected, (state, action) => {
+                state.fetchStatus = "error";
+                state.error = action.payload;
+            })
     }
 });
 

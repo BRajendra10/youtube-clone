@@ -7,22 +7,23 @@ import SubscriptionCard from "../components/SubscriptionCard";
 
 export function SubscriptionCardSkeleton() {
     return (
-        <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-neutral-800 shrink-0" >
-            <div className="flex items-center gap-4 sm:gap-6">
+        <div className="bg-neutral-900/70 border border-neutral-800 rounded-2xl p-4">
+            <div className="flex items-center gap-3 sm:gap-6">
                 {/* Avatar */}
                 <div className="w-20 h-20 rounded-full bg-neutral-800 shrink-0" />
 
                 {/* Right Side */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between flex-1 gap-3">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center flex-1 gap-2">
+
                     {/* Text */}
-                    <div className="space-y-2">
-                        <div className="h-4 w-32 sm:w-40 bg-neutral-800 rounded" />
-                        <div className="h-3 w-24 bg-neutral-800 rounded" />
-                        <div className="h-3 w-36 bg-neutral-800 rounded mt-1" />
+                    <div className="space-y-1">
+                        <div className="h-4 sm:h-5 w-32 sm:w-44 bg-neutral-800 rounded" />
+                        <div className="h-3 sm:h-4 w-24 sm:w-36 bg-neutral-800 rounded" />
+                        <div className="h-3 w-40 bg-neutral-800 rounded mt-1" />
                     </div>
 
                     {/* Button */}
-                    <div className="h-8 w-28 bg-neutral-800 rounded-full" />
+                    <div className="h-8 w-28 rounded-full bg-neutral-800 mt-2 sm:mt-0" />
                 </div>
             </div>
         </div>

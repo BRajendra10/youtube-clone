@@ -2,17 +2,17 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "./axios";
 
 // Toggle video like
-export const toggleVideoLike = createAsyncThunk(
-    "likes/toggleVideoLike",
-    async (videoId, { rejectWithValue }) => {
-        try {
-            const response = await api.post(`/likes/toggle/v/${videoId}`);
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || "Failed to toggle video like");
-        }
-    }
-);
+// export const toggleVideoLike = createAsyncThunk(
+//     "likes/toggleVideoLike",
+//     async (videoId, { rejectWithValue }) => {
+//         try {
+//             const response = await api.post(`/likes/toggle/v/${videoId}`);
+//             return response.data;
+//         } catch (error) {
+//             return rejectWithValue(error.response?.data || "Failed to toggle video like");
+//         }
+//     }
+// );
 
 // Toggle comment like
 export const toggleCommentLike = createAsyncThunk(
@@ -27,20 +27,6 @@ export const toggleCommentLike = createAsyncThunk(
     }
 );
 
-// Toggle post like
-export const togglePostLike = createAsyncThunk(
-    "likes/togglePostLike",
-    async (postId, { rejectWithValue }) => {
-        try {
-            const response = await api.post(`/likes/toggle/p/${postId}`);
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || "Failed to toggle post like");
-        }
-    }
-);
-
-// Fetch liked videos
 export const fetchLikedVideos = createAsyncThunk(
     "likes/fetchLikedVideos",
     async (_, { rejectWithValue }) => {
@@ -85,16 +71,16 @@ const likeSlice = createSlice({
     extraReducers: (builder) => {
         builder
             // Toggle like video
-            .addCase(toggleVideoLike.pending, (state) => {
-                state.fetchStatus = "loading";
-            })
-            .addCase(toggleVideoLike.fulfilled, (state) => {
-                state.fetchStatus = "success";
-            })
-            .addCase(toggleVideoLike.rejected, (state, action) => {
-                state.fetchStatus = "error";
-                state.error = action.payload;
-            })
+            // .addCase(toggleVideoLike.pending, (state) => {
+            //     state.fetchStatus = "loading";
+            // })
+            // .addCase(toggleVideoLike.fulfilled, (state) => {
+            //     state.fetchStatus = "success";
+            // })
+            // .addCase(toggleVideoLike.rejected, (state, action) => {
+            //     state.fetchStatus = "error";
+            //     state.error = action.payload;
+            // })
 
             // Toggle like comment
             .addCase(toggleCommentLike.pending, (state) => {
@@ -109,16 +95,17 @@ const likeSlice = createSlice({
             })
 
             // Toggle like post
-            .addCase(togglePostLike.pending, (state) => {
-                state.fetchStatus = "loading";
-            })
-            .addCase(togglePostLike.fulfilled, (state) => {
-                state.fetchStatus = "success";
-            })
-            .addCase(togglePostLike.rejected, (state, action) => {
-                state.fetchStatus = "error";
-                state.error = action.payload;
-            })
+            // .addCase(togglePostLike.pending, (state) => {
+            //     state.fetchStatus = "loading";
+            // })
+            // .addCase(togglePostLike.fulfilled, (state, action) => {
+            //     state.fetchStatus = "success";
+            //     console.log(action);
+            // })
+            // .addCase(togglePostLike.rejected, (state, action) => {
+            //     state.fetchStatus = "error";
+            //     state.error = action.payload;
+            // })
 
             // Fetch liked videos
             .addCase(fetchLikedVideos.pending, (state) => {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, Bell, Settings, TvMinimalPlay, SquarePen, Menu, User, Users, LogOut, Repeat, } from 'lucide-react';
+import { Search, Plus, Bell, Settings, TvMinimalPlay, SquarePen, Menu, User, Users, LogOut, Repeat, LogIn, } from 'lucide-react';
 
 import {
     DropdownMenu,
@@ -105,9 +105,9 @@ export default function Navbar() {
                                 <TvMinimalPlay className="w-5 h-5" /> Upload video
                             </button>
 
-                            <button 
+                            <button
                                 className="w-full flex gap-3 px-4 py-2 text-sm hover:bg-muted"
-                                onClick={() => navigate("/posts")}    
+                                onClick={() => navigate("/posts")}
                             >
                                 <SquarePen className="w-5 h-5" /> Create a post
                             </button>
@@ -237,6 +237,14 @@ export default function Navbar() {
                                 <button className="group w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-muted">
                                     <Repeat className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
                                     <span>Switch account</span>
+                                </button>
+
+                                <button
+                                    onClick={() => navigate("/login")}
+                                    className="group w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-muted"
+                                >
+                                    <LogIn className="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                                    <span>Login</span>
                                 </button>
                             </div>
                         </div>

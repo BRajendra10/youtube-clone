@@ -109,6 +109,45 @@ export const fetchWatchHistory = createAsyncThunk(
     }
 );
 
+export const verifyEmailThunk = createAsyncThunk(
+    "user/verifyEmail",
+    async ({ email, code }, { rejectWithValue }) => {
+        try {
+            const res = await api.post(
+                "/users/verify_email",
+                { email, code },
+                { withCredentials: true }
+            );
+
+            return res.data;
+        } catch (err) {
+            return rejectWithValue(
+                err.response?.data?.message || "Email verification failed"
+            );
+        }
+    }
+);
+
+export const resendVerificationCodeThunk = createAsyncThunk(
+    "user/resendVerificationCode",
+    async ({ email }, { rejectWithValue }) => {
+        try {
+            console.log(email)
+            const res = await api.post(
+                "/users/resend_verification_code",
+                { email }
+            );
+
+            return res.data;
+        } catch (err) {
+            return rejectWithValue(
+                err.response?.data?.message || "Failed to resend verification code"
+            );
+        }
+    }
+);
+
+
 const initialState = {
     currentUser: null,
     userChannel: null,
@@ -231,6 +270,30 @@ const userSlice = createSlice({
                 state.watchHistory = action.payload;
             })
             .addCase(fetchWatchHistory.rejected, (state, action) => {
+                state.fetchStatus = "error"
+                state.error = action.payload;
+            })
+
+            .addCase(verifyEmailThunk.pending, (state) => {
+                state.fetchStatus = "pending"
+            })
+            .addCase(verifyEmailThunk.fulfilled, (state, action) => {
+                state.fetchStatus = "success";
+                console.log(action)
+            })
+            .addCase(verifyEmailThunk.rejected, (state, action) => {
+                state.fetchStatus = "error"
+                state.error = action.payload;
+            })
+
+            .addCase(resendVerificationCodeThunk.pending, (state) => {
+                state.fetchStatus = "pending"
+            })
+            .addCase(resendVerificationCodeThunk.fulfilled, (state, action) => {
+                state.fetchStatus = "success";
+                console.log(action)
+            })
+            .addCase(resendVerificationCodeThunk.rejected, (state, action) => {
                 state.fetchStatus = "error"
                 state.error = action.payload;
             })

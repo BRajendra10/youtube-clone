@@ -15,6 +15,7 @@ import SinglePlaylistPage from "../pages/SinglePlaylistPage";
 import PostsPage from "../pages/Posts";
 import LikedVideosPage from "../pages/LikedVideos";
 import WatchHistoryPage from "../pages/WatchHistory";
+import EmailVerification from "../pages/EmailVerification";
 
 export default function Navigation() {
   return (
@@ -22,6 +23,7 @@ export default function Navigation() {
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Signup />} />
+      <Route path="/verify-email" element={<EmailVerification />} />
 
       {/* Protected Layout */}
       <Route

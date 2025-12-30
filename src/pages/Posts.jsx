@@ -42,6 +42,8 @@ export default function PostsPage() {
     const { posts, fetchStatus } = useSelector((state) => state.post);
     const { currentUser } = useSelector((state) => state.user);
 
+    console.log(posts)
+
     useEffect(() => {
         dispatch(getAllPosts());
     }, [dispatch]);

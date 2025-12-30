@@ -76,7 +76,7 @@ export default function TabsComponent() {
                                 <PostCard
                                     key={post._id}
                                     post={post}
-                                    isOwner={post.user?._id === currentUser?._id}
+                                    isOwner={post.owner?._id === currentUser?._id}
                                 />
                             ))}
                         </div>

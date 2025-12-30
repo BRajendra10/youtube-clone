@@ -95,7 +95,7 @@ export default function Video({ id, data, onSave }) {
 
             <DropdownMenuContent
                 align="end"
-                className="w-40 bg-[#1f1f1f] text-white border border-neutral-700"
+                className="w-50 bg-[#1f1f1f] text-white border border-neutral-700"
             >
                 <DropdownMenuItem
                     onClick={(e) => {
@@ -103,15 +103,15 @@ export default function Video({ id, data, onSave }) {
                         onSave();
                     }}
                 >
-                    <Bookmark className="h-4 w-4 text-neutral-300" />
+                    <Bookmark className="w-5 h-5 text-neutral-300" />
                     Save to Playlist
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                    <Clock className="h-4 w-4 text-neutral-300" />
+                    <Clock className="w-5 h-5 text-neutral-300" />
                     Watch latter
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                    <Share2 className="h-4 w-4 text-neutral-300" />
+                    <Share2 className="w-5 h-5 text-neutral-300" />
                     Share
                 </DropdownMenuItem>
 
@@ -122,7 +122,7 @@ export default function Video({ id, data, onSave }) {
                         }}
                         className="flex items-center gap-2"
                     >
-                        <Pencil className="h-5 text-neutral-300" />
+                        <Pencil className="h-5 w-5 text-neutral-300" />
                         Edit
                     </DropdownMenuItem>
                 )}
@@ -135,7 +135,7 @@ export default function Video({ id, data, onSave }) {
                         }}
                         className="flex items-center gap-2 text-neutral-300"
                     >
-                        <Trash className="h-5" />
+                        <Trash className="h-5 w-5" />
                         Delete
                     </DropdownMenuItem>
                 )}

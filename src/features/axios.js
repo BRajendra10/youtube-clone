@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URI,
+  // baseURL: import.meta.env.VITE_API_BASE_URI,
+  baseURL: "http://localhost:8000/api/v1",
   withCredentials: true,
   timeout: 15000,
 });
@@ -12,6 +13,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    if (originalRequest.url.includes("/users/refresh_token")) {
+      window.location.href = "/login";
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -19,6 +25,7 @@ api.interceptors.response.use(
         await api.post("/users/refresh_token");
         return api(originalRequest)
       } catch (refreshError) {
+        console.log("refresh failed now login")
         
         window.location.href = "/login";
         return Promise.reject(refreshError)

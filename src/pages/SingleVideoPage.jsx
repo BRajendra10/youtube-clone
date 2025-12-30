@@ -9,8 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Share2, ThumbsUp } from "lucide-react";
 import { toast } from "sonner";
 
-import { addVideoToWatchHistory, toggleSubscribtion } from "../features/userSlice.js";
-import { toggleVideoLike } from "../features/likeSlice.js";
+import { addVideoToWatchHistory } from "../features/userSlice.js";
+import { toggleSubscribtionFromVideo, toggleVideoLike } from "../features/videoSlice.js";
 import { fetchVideoById } from "../features/videoSlice.js";
 
 import Comments from "./Comments.jsx";
@@ -24,6 +24,20 @@ export default function SingleVideoPage() {
         (state) => state.video
     );
 
+    const handleToggle = async (channelId) => {
+        dispatch(toggleSubscribtionFromVideo(channelId))
+            .unwrap()
+            .then((res) =>
+                toast.success(
+                    res.isSubscribed
+                        ? "Subscribed successfully"
+                        : "Unsubscribed successfully"
+                )
+            )
+            .catch((error) => toast.error(error?.message || "Failed to toggle subscription"))
+
+    };
+
     useEffect(() => {
         dispatch(fetchVideoById(videoId))
             .unwrap()
@@ -33,18 +47,12 @@ export default function SingleVideoPage() {
         window.scrollTo(0, 0);
     }, [dispatch, videoId]);
 
-    const handleSubscribeToggle = (channelId) => {
-        dispatch(toggleSubscribtion(channelId))
-            .unwrap()
-            .then(() => toast.success("Subscription toggled"))
-            .catch(() => toast.error("Subscription failed !!"));
-    };
-
     const handleVideoLike = async () => {
         try {
             await dispatch(toggleVideoLike(videoId)).unwrap();
             toast.success("Like toggled");
         } catch (error) {
+            console.log(error)
             toast.error(error.message || "Failed to toggle like");
         }
     };
@@ -63,6 +71,7 @@ export default function SingleVideoPage() {
     if (!selectedVideo) return null;
 
     const video = selectedVideo;
+    const isSubscribed = video.owner?.isSubscribed;
 
     return (
         <div className="min-h-screen w-full text-white p-6 flex flex-col lg:flex-row gap-8">
@@ -112,10 +121,11 @@ export default function SingleVideoPage() {
                         </Link>
 
                         <Button
-                            className="bg-white text-black hover:bg-gray-200 px-6 py-2 rounded-full font-semibold"
-                            onClick={() => handleSubscribeToggle(video.owner?._id)}
+                            className="rounded-full px-6"
+                            variant={isSubscribed ? "secondary" : "default"}
+                            onClick={() => handleToggle(video.owner?._id)}
                         >
-                            Subscribe
+                            {isSubscribed ? "Subscribed" : "Subscribe"}
                         </Button>
                     </div>
 
@@ -126,9 +136,8 @@ export default function SingleVideoPage() {
                             className="flex items-center gap-1 pr-4"
                         >
                             <ThumbsUp
-                                className={`h-5 w-5 ${
-                                    video.isLiked ? "fill-white" : ""
-                                }`}
+                                className={`h-5 w-5 ${video.isLiked ? "fill-white" : ""
+                                    }`}
                             />
                             <span className="text-sm">
                                 {video.likesCount}

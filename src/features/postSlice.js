@@ -66,6 +66,18 @@ export const deletePost = createAsyncThunk(
     }
 );
 
+export const togglePostLike = createAsyncThunk(
+    "likes/togglePostLike",
+    async (postId, { rejectWithValue }) => {
+        try {
+            const response = await api.post(`/likes/toggle/p/${postId}`);
+            return response.data.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to toggle post like");
+        }
+    }
+);
+
 const postSlice = createSlice({
     name: "post",
     initialState: {
@@ -116,6 +128,22 @@ const postSlice = createSlice({
                 state.error = action.payload;
             })
 
+            .addCase(togglePostLike.pending, (state) => {
+                state.fetchStatus = "loading";
+            })
+            .addCase(togglePostLike.fulfilled, (state, action) => {
+                state.fetchStatus = "success";
+
+                const { postId, likeState } = action.payload;
+                const post = state.posts.find(p => p._id === postId);
+                console.log(post)
+
+                post.isLiked = likeState;
+            })
+            .addCase(togglePostLike.rejected, (state, action) => {
+                state.fetchStatus = "error";
+                state.error = action.payload;
+            })
 
             // UPDATE
             .addCase(updatePost.fulfilled, (state, action) => {

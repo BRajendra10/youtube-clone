@@ -115,6 +115,9 @@ export default function WatchHistoryPage() {
                                 <h2 className="font-medium text-sm sm:text-base line-clamp-2">
                                     {video.title}
                                 </h2>
+                                <p className="text-xs sm:text-sm text-neutral-400 line-clamp-2">
+                                    {video.description}
+                                </p>
 
                                 <div className="flex items-center gap-2 text-xs sm:text-sm text-neutral-400">
                                     <Avatar className="h-6 w-6">
@@ -125,10 +128,6 @@ export default function WatchHistoryPage() {
                                     </Avatar>
                                     <span>{video.owner?.username}</span>
                                 </div>
-
-                                <p className="text-xs sm:text-sm text-neutral-400 line-clamp-2">
-                                    {video.description}
-                                </p>
                             </div>
                         </Link>
                     ))}

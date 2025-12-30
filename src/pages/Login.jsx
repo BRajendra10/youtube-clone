@@ -117,7 +117,7 @@ export default function Login() {
                             className={
                                 "underline text-white hover:text-blue-500 transition"
                             }
-                            to="/signup"
+                            to="/register"
                         >
                             Create account
                         </NavLink>
