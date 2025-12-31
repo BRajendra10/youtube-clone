@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MoreVertical, Pencil, Share2, ThumbsUp, ThumbsDown, Trash } from "lucide-react";
+import { Heart, MoreVertical, Pencil, Share2, ThumbsUp, Trash } from "lucide-react";
 import { formatDate } from "../store/formate";
 
 export default function PostCard({ post, isOwner }) {
@@ -19,7 +19,6 @@ export default function PostCard({ post, isOwner }) {
 
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState("");
-    const [disLike, setDisLike] = useState(false);
 
     const handleUpdate = async () => {
         if (!editedContent.trim()) return;
@@ -102,19 +101,6 @@ export default function PostCard({ post, isOwner }) {
                             <span className="text-sm">
                                 {post.likesCount}
                             </span>
-                        </button>
-
-                        <button
-                            onClick={() => setDisLike(!disLike)}
-                            className={`flex items-center gap-1 transition-colors ${disLike
-                                ? "text-white"
-                                : "hover:text-white"
-                                }`}
-                        >
-                            <ThumbsDown
-                                className={`h-5 w-5 ${disLike ? "fill-white" : ""
-                                    }`}
-                            />
                         </button>
                     </div>
 
