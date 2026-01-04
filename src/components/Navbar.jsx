@@ -122,76 +122,54 @@ export default function Navbar() {
                         </button>
                     </PopoverTrigger>
 
-                    <PopoverContent className="relative right-18 w-100 dark p-0 rounded-lg shadow-lg bg-background border">
-
+                    <PopoverContent
+                        align="end"
+                        sideOffset={12}
+                        className="
+                            w-[95vw] sm:w-[380px]
+                            max-h-[80vh]
+                            p-0
+                            rounded-lg
+                            shadow-lg
+                            bg-background
+                            border
+                            overflow-hidden
+                        "
+                    >
                         {/* Header */}
                         <div className="flex items-center justify-between px-4 py-3 border-b">
                             <h3 className="font-semibold text-lg">Notifications</h3>
                             <Settings className="w-5 h-5 cursor-pointer hover:text-primary" />
                         </div>
 
-                        {/* Notification List (Scrollable) */}
-                        <div className="max-h-96 overflow-y-auto">
-
+                        {/* Notification List */}
+                        <div className="max-h-[65vh] overflow-y-auto">
                             {/* Notification Item */}
                             <div className="flex items-start gap-3 p-4 hover:bg-muted/50 cursor-pointer transition">
-
-                                {/* Avatar */}
                                 <img
-                                    className="w-10 h-10 rounded-full"
+                                    className="w-10 h-10 rounded-full shrink-0"
                                     src="https://avatars.githubusercontent.com/u/182490144?v=4"
                                     alt=""
                                 />
 
-                                {/* Text Section */}
                                 <div className="flex-1 space-y-1">
-                                    <p className="text-sm">
-                                        <span className="font-semibold">Rajendra</span> liked your video:
+                                    <p className="text-sm leading-snug">
+                                        <span className="font-semibold">Rajendra</span> liked your video
                                         <span className="font-medium"> “How to build a Navbar”</span>
                                     </p>
-
-                                    <p className="text-xs text-muted-foreground">
-                                        2 hours ago
-                                    </p>
+                                    <p className="text-xs text-muted-foreground">2 hours ago</p>
                                 </div>
 
-                                {/* Thumbnail (Optional) */}
                                 <img
-                                    className="w-16 h-9 rounded object-cover"
+                                    className="w-16 h-9 rounded object-cover shrink-0"
                                     src="https://i.ytimg.com/vi/5qap5aO4i9A/hqdefault.jpg"
                                     alt=""
                                 />
                             </div>
-
-                            {/* Duplicate this block for more notifications */}
-                            <div className="flex items-start gap-3 p-4 hover:bg-muted/50 cursor-pointer transition">
-                                <img
-                                    className="w-10 h-10 rounded-full"
-                                    src="https://i.pravatar.cc/100?img=12"
-                                    alt=""
-                                />
-
-                                <div className="flex-1 space-y-1">
-                                    <p className="text-sm">
-                                        <span className="font-semibold">Arjun</span> commented:
-                                        <span className="font-medium"> “Amazing work bro!”</span>
-                                    </p>
-
-                                    <p className="text-xs text-muted-foreground">
-                                        1 day ago
-                                    </p>
-                                </div>
-
-                                <img
-                                    className="w-16 h-9 rounded object-cover"
-                                    src="https://i.ytimg.com/vi/aqz-KE-bpKQ/hqdefault.jpg"
-                                    alt=""
-                                />
-                            </div>
-
                         </div>
                     </PopoverContent>
                 </Popover>
+
 
                 <Popover>
                     <PopoverTrigger asChild>

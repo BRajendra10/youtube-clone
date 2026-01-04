@@ -23,6 +23,7 @@ export default function SingleVideoPage() {
     const { videos, selectedVideo, fetchStatus } = useSelector(
         (state) => state.video
     );
+    const { currentUser } = useSelector((state) => state.user);
 
     const handleToggle = async (channelId) => {
         dispatch(toggleSubscribtionFromVideo(channelId))
@@ -72,6 +73,7 @@ export default function SingleVideoPage() {
 
     const video = selectedVideo;
     const isSubscribed = video.owner?.isSubscribed;
+    console.log(isSubscribed, video)
 
     return (
         <div className="min-h-screen w-full text-white p-6 flex flex-col lg:flex-row gap-8">
@@ -120,13 +122,13 @@ export default function SingleVideoPage() {
                             </div>
                         </Link>
 
-                        <Button
+                        {currentUser._id !== video.owner._id && <Button
                             className="rounded-full px-6"
                             variant={isSubscribed ? "secondary" : "default"}
                             onClick={() => handleToggle(video.owner?._id)}
                         >
                             {isSubscribed ? "Subscribed" : "Subscribe"}
-                        </Button>
+                        </Button>}
                     </div>
 
                     {/* LIKE / SHARE */}

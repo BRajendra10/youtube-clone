@@ -7,7 +7,6 @@ function App() {
   return (
     <div className="w-full h-screen">
       <Navigation />
-
       <Toaster richColors position="top-right" />
     </div>
   )
